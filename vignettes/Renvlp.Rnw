@@ -1,0 +1,560 @@
+ \documentclass[nojss]{jss}
+
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{EnvelopeEstimation}
+%\VignetteKeyword{EnvelopeEstimation}
+
+
+%% additional packages
+\usepackage{amsmath, amsfonts, amssymb, amsthm, graphicx}
+\usepackage{bm}% Bold Math package
+\usepackage{url}% Bold Math package
+
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+\usepackage{multirow}
+
+\newcommand{\indep}{\rotatebox[origin=c]{90}{$\models$}}
+\newcommand{\Y}{\mathbf{Y}}
+\newcommand{\y}{\mathbf{y}}
+\newcommand{\X}{\mathbf{X}}
+\newcommand{\x}{\mathbf{x}}
+\newcommand{\be}{\bm{\beta}}
+\newcommand{\al}{\bm{\alpha}}
+\newcommand{\Ga}{\bm{\Gamma}}
+\newcommand{\et}{\bm{\eta}}
+\newcommand{\eps}{\bm{\epsilon}}
+\newcommand{\Sig}{\bm{\Sigma}}
+\newcommand{\Proj}{\mathbf{P}}
+\newcommand{\Q}{\mathbf{Q}}
+\newcommand{\Ome}{\bm{\Omega}}
+\newcommand{\m}{\bm{\mu}}
+\newcommand{\La}{\bm{\Lambda}}
+\newcommand{\U}{\mathbf{U}}
+\newcommand{\D}{\mathbf{D}}
+\newcommand{\V}{\mathbf{V}}
+\newcommand{\Ph}{\bm{\Phi}}
+\newcommand{\Del}{\bm{\Delta}}
+\newcommand{\M}{\mathbf{M}}
+\newcommand{\Sam}{\mathbf{S}}
+\newcommand{\A}{\mathbf{A}}
+\newcommand{\G}{\mathbf{G}}
+\newcommand{\B}{\mathbf{B}}
+\newcommand{\C}{\mathbf{C}}
+\newcommand{\Ebf}{\mathrm{E}}
+\newcommand{\W}{\mathbf{W}}
+\newcommand{\aaa}{\mathbf{a}}
+\newcommand{\I}{\mathbf{I}}
+\newcommand{\Bcal}{\mathcal{B}}
+\newcommand{\Ecal}{\mathcal{E}}
+\newcommand{\Mcal}{\mathcal{M}}
+\newcommand{\Scal}{\mathcal{S}}
+\newcommand{\Rcal}{\mathcal{R}}
+\newcommand{\Rbb}{\mathbb{R}}
+\newcommand{\Xbb}{\mathbb{X}}
+\newcommand{\Ybb}{\mathbb{Y}}
+
+\author{Minji Lee\\University of Florida \And 
+        Zhihua Su\\University of Florida}
+\Plainauthor{Minji Lee, Zhihua Su} 
+\title{\pkg{Renvlp}: An \proglang{R} Package for Efficient Estimation in Multivariate Analysis Using Envelope Models}
+\Plaintitle{envlp: An R Package for Efficient Estimation in Multivariate Analysis Using Envelope Models} 
+\Shorttitle{\pkg{envlp}: Envelope Estimation} 
+\Keywords{dimension reduction, envelope model, multivariate linear regression, generalized linear models,  \proglang{R}}
+\Plainkeywords{dimension reduction, envelope model, multivariate linear regression, generalized linear models, R}
+\Address{
+  Minji Lee, Zhihua Su\\
+  Department of Statistics\\
+  University of Florida\\
+  102 Griffin-Floyd Hall\\
+  Gainesville, FL, United States of America\\
+  E-mail: \email{mlee9@ufl.edu, zhihuasu@stat.ufl.edu}\\
+}
+
+\Abstract{
+ 	The envelope models can achieve substantial efficiency gains in multivariate analysis.  The only software the implements envelope models so far is the \proglang{matlab} toolbox \pkg{envlp} \citep{Cook2015}.  Estimation in \pkg{envlp} requires optimization over a Grassmann manifold, which is slow in sizable problems.   This article introduces the \proglang{R} package \pkg{Renvlp}  which uses a non-Grassmann algorithm  for envelope estimation.   This algorithm is much faster and more accurate than the estimation algorithms that involve manifold optimization.   Besides the envelope models in the \proglang{matlab} toolbox \pkg{envlp}, \pkg{Renvlp} also implements the latest developments in envelope methodology.  The models supported by \pkg{Renvlp} include response envelope model,  partial envelopes model,  predictor envelope model, simultaneous envelope model, heteroscedastic envelope model,  groupwise envelope model, scaled response envelope model, scaled predictor envelope,  envelope model in logistic regression,  envelope model in poisson regression,  weighted response envelope estimation,  weighted partial envelope estimation, and  weighted predictor envelope estimation. For each model, \pkg{Renvlp} provides model fitting and  inference functions for bootstrapping, cross validation, prediction and hypothesis testing.  Examples are provided for illustration.}
+ 	
+\date{January 15, 2018} 	
+
+\begin{document}
+
+\section[Introduction]{Introduction}
+
+The envelope model proposed by \citet{Cook2010} has the potential to gain efficiency in estimation and improve prediction in multivariate analysis.   Efficiency gains are achieved by identifying the immaterial information and accounting for it in subsequent analysis.  In particular, massive gains can be obtained when the immaterial information is substantially more variable than the material information.   After the development in \citet{Cook2010}, many advances have been taken place in this area  \citep{Su2011, Su2013, Cook2013a, Cook2013, Cook2015a, Cook2015b, cook2015envelopes, li2016supervised,  su2016sparse, khare2017bayesian, li2017parsimonious, zhang2017tensor, Park2017}.
+
+The only software that implements the envelope models is the \pkg{envlp} toolbox developed in \proglang{matlab} \citep{Cook2015}.   \pkg{envlp} is well-suited for moderate problem, but it can be quite slow in sizable problems.  This is because the estimation algorithm in \pkg{envlp} involves optimization over Grassmann manifolds, which is challenging in high dimensional problems.    
+
+The goal of this article is to introduce the \proglang{R} \citep{RCT2017} package \pkg{Renvlp}  that implements thirteen different envelope models including some latest developments in the area, using an algorithm  \citep{Cook2016} which avoids manifold optimization in envelope estimation. Compared with \proglang{matlab} toolbox \pkg{envlp}, we make the following several improvements.   First, \pkg{Renvlp} is more comprehensive and contains many recently developed envelope models.  Not only it implements the response envelope model \citep{Cook2010}, partial envelope model \citep{Su2011}, predictor envelope model \citep{Cook2013a}, heteroscedastic envelope model \citep{Su2013}, and scaled response envelope model \citep{Cook2013} which are in \pkg{envlp},  but also it incorporates the latest developments including the scaled predictor envelope model \citep{Cook2016a}, simultaneous envelope model \citep{Cook2015b}, envelope model in logistic regression, envelope model in poisson regression\citep{Cook2015a}, groupwise envelope model \citep{Park2017}, and  weighted envelope model \citep{Eck2017}.  Second, \pkg{Renvlp} adopts the non-Grassmann algorithm \citep{Cook2016} for envelope estimation.  As a result, \pkg{Renvlp} is much faster than \pkg{envlp} and is capable to handle larger datasets.  Furthermore, the non-Grassmann manifold algorithm \citep{Cook2016} is developed only for one type of objective function, in order to make this algorithm available in broader context, we extend the applicability of the algorithm such that it can be used for general envelope estimation.   At last, the \proglang{R} implementation of envelope estimation is more accessible to the statistical community than the \proglang{matlab} implementation. 
+
+The remainder of this paper is organized as follows.  We provide a brief overview of envelope models supported by \pkg{Renvlp} in Section~\ref{sec:model}.  In Section~\ref{sec:alg}, we introduce the estimation algorithm and investigate its performance with numerical experiments.  Section~\ref{sec:imp} contains a detailed description of the structure of \pkg{Renvlp}.  Section~\ref{sec:ilst} illustrates the use of the package with an example.  Section~\ref{sec:conc} concludes with a short discussion.
+
+The following notations will be used in our discussion:  We use $\Proj_{(\cdot)}$ to denote a projection operator onto the subspace indicated by its arguments and $\Q_{(\cdot)} = \I - \Proj_{(\cdot)}$.  If $\A$ is a matrix, $\text{span}(\A)$ indicates the subspace spanned by the column vectors of $\A$.   The symbol  $\| \cdot \|$ denotes the spectral norm of a matrix, and $\A\sim\B$ means that $\A$ and $\B$ have the same distribution.  
+
+\section[Envelope Models]{Envelope Models}\label{sec:model}
+
+\subsection[Response envelope model]{Response envelope model}\label{sec:re}
+The response envelope model aims to reduce the standard error of the estimated regression coefficients in the context of multivariate linear regression.  It is first introduced in \cite{Cook2010} under the model
+\begin{align} \label{reg}
+\Y = \m+ \be \X +\eps
+\end{align}
+where $\Y \in \Rbb^{r}$ is the response vector, $\X \in \Rbb^{p}$ is the non-stochastic predictor vector, and the error vector $\eps$ has mean 0 and covariance matrix $\Sig$. We assume that $\Sig>0$.  The intercept $\m\in\Rbb^{r}$ and the regression coefficient matrix $\be \in \Rbb^{r \times p}$ are unknown parameters. 
+
+The response envelope model achieves the efficiency gains by identifying part of the response variables that are invariant to the changes in $\X$.  More specifically, let $\Scal$ denote a subspace of $\Rbb^{r}$.  We assume that $\Y$ can be decomposed into a material part $\Proj_{\Scal}\Y$ and an immaterial part $\Q_{\Scal}\Y$  such that $(i)$ $\Q_{\Scal} \Y | \X \sim \Q_{\Scal} \Y$ and $(ii)$ $\COV (\Q_{\Scal} \Y , \Proj_{\Scal} \Y | \X) = 0$.  Conditions (i) and (ii) indicate that $\Q_{\Scal} \Y$ does not carry any information about $\be$ directly or indirectly through its conditional covariance with $\Proj_{\Scal} \Y$.    Under model \eqref{reg}, (i) and (ii) are equivalent to $(i)'$ $\text{span}(\be) \subseteq \Scal$ and $(ii)'$ $\mathbf{\Sig} = \Proj_{\Scal} \Sig \Proj_{\Scal}  + \Q_{\Scal} \Sig \Q_{\Scal} $, where $ \Proj_{\Scal} \Sig \Proj_{\Scal} = \VAR (\Proj_{\Scal} \Y) $ represents the variation of the material part $\Proj_{\Scal}\Y$ and $\Q_{\Scal} \Sig \Q_{\Scal} = \VAR (\Q_{\Scal} \Y)$ represents the variation of the immaterial part $\Q_{\Scal}\Y$.  The $\Sig$-envelope of $\be$ is defined as the intersection of all $\Scal \subseteq \Rbb^{r}$ that satisfies (i) and (ii), and is denoted by $\Ecal_{\Sig} (\be)$, or $\Ecal$ for short.   The dimension of the envelope subspace $\Ecal_{\Sig} (\be)$ is denoted by $u$, and $0\leq u \leq r$.  
+
+Let $\Ga \in \Rbb^{r \times u}$ be an orthonormal basis of $\Ecal_{\Sig} (\be)$, and let $\Ga_{0} \in \Rbb^{r \times (r - u)}$ be a completion of $\Ga$ such that $(\Ga, \Ga_{0}) \in \Rbb^{r \times r}$ is an orthogonal matrix. Under the envelope parameterization, (\ref{reg}) can be written as 
+\begin{align} \label{env}
+\Y = \m + \Ga \et \X + \eps, \quad 
+\Sig = \Ga \Ome \Ga^{\top} + \Ga_{0} \Ome_{0} \Ga_{0}^{\top},
+\end{align}
+where $\be = \Ga \et$.  The matrix $\et \in \Rbb^{u \times p}$ carries the coordinates of $\be$ with respect to the basis $\Ga$, and $\Ome \in \Rbb^{u \times u}$ and $\Ome_{0} \in \Rbb^{(r - u) \times (r - u)}$ carry the coordinates of $\Sig$ with respect to $\Ga$ and $\Ga_{0}$.  We call model~\eqref{env} the response envelope model, and ~\eqref{reg} the standard model.   The number of parameters under the standard model is $pr+r(r+1)/2$, and the number of parameters under the envelope model is $pu+r(r+1)/2$.  When $u=r$, $\Ecal_{\Sig} (\be)=\Rbb^{r}$ and the envelope model degenerates to the standard model. 
+
+The estimation of parameters will be discussed in more details in Section~\ref{sec:alg}.  \cite{Cook2010} has shown that the response envelope estimator of $\be$ is always as efficient as or more efficient than the standard estimator of $\be$ asymptotically.  Substantial efficiency gains can be achieved when the  variation of the immaterial part is large relative to the  variation of the material part, i.e. $\| \Ga_{0} \Ome_{0} \Ga_{0}^{\top} \|  \gg \|  \Ga \Ome \Ga^{\top} \| $. 
+
+\subsection[Partial envelope model]{Partial envelope model}\label{sec:penv}
+The partial envelope model \citep{Su2011} focuses on the efficient estimation of the coefficients of main interest in the multivariate linear regression (\ref{reg}).    For example, in a clinical study, the predictor of interest is the presence or absent of the drug under study, while demographical characteristics of the patients are also measured as covariates to reduce variability.   We then partition $\X$ into $\X_{1} \in \Rbb^{p_1}$ and $\X_{2} \in \Rbb^{p_2}$ ($p_{1} + p_{2} = p$), where $\X_{1}$ contains the predictors of main interest and $\X_{2}$ contains other predictors.  We can  partition the columns of $\be$ accordingly into $\be_{1}$ and $\be_{2}$.   Then (\ref{reg}) can be written as 
+\begin{align} \label{preg}
+\Y = \m + \be_{1} \X_{1} + \be_{2} \X_{2} + \eps,
+\end{align}
+where $\be_{1}\in\Rbb^{r\times p_{1}}$ contains the coefficients of main interest, and $\be_{2}\in\Rbb^{r\times p_{2}}$ contains the coefficients for $\X_{2}$.  
+
+Now instead of imposing an envelope structure to $\be$ and $\Sig$ as in \eqref{env}, we consider imposing the envelope structure on $\be_{1}$ and leaving $\be_{2}$ unconstrained. More specifically, we consider $\Ecal_{\Sig} (\be_{1})$, the $\Sig$-envelope of $\be_{1}$,  and call it the partial envelope of $\be_{1}$.   If $\Ecal_{\Sig} (\be_{1})$ appears in subscripts, we denote it by $\Ecal_{1}$.   Let $u_{1}$ be the dimension of the partial envelope $\Ecal_{\Sig} (\be_{1})$.  Since $\Ecal_{\Sig} (\be_{1})\subseteq\Ecal_{\Sig} (\be)$, we have $u_{1}\leq u$.   The response $\Y$ can be decomposed into the immaterial part $\Q_{\Ecal_{1}}\Y$ and the material part $\Proj_{\Ecal_{1}}\Y$, depending on whether they carry information on $\be_{1}$.   The material and immaterial parts satisfy (i) $\Q_{\Ecal_{1}}\Y\mid(\X_{1}, \X_{2})\sim\Q_{\Ecal_{1}}\Y\mid\X_{2}$ and (ii) $\COV(\Q_{\Ecal_{1}}\Y, \Proj_{\Ecal_{1}}\Y\mid\X)=0$.  Together, (i) and (ii) indicate that the immaterial part $\Q_{\Ecal_{1}}\Y$ carries no information on $\be_{1}$ directly or indirectly.   Under the context of \eqref{reg}, conditions (i) and (ii) are equivalent to $\text{span}(\be_{1}) \subseteq \Ecal_{\Sig} (\be_{1})$ and $\Sig = \Proj_{\Ecal_{1}} \Sig \Proj_{\Ecal_{1}} + \Q_{\Ecal_{1}} \Sig \Q_{\Ecal_{1}}$.  Since the immaterial variation with respect to $\be_{1}$ is larger than or at least equal to the immaterial information with respect to $\be$: $\VAR(\Q_{\Ecal_{1}}\Y)=\Q_{\Ecal_{1}} \Sig \Q_{\Ecal_{1}}\geq \Q_{\Ecal} \Sig \Q_{\Ecal}=\VAR(\Q_{\Ecal}\Y)$, we usually achieve more efficiency gains in estimating $\be_{1}$ using partial envelope than using response envelope.  
+
+Let $\Ga \in \Rbb^{r \times u_{1}}$ be an orthonormal basis of $\Ecal_{\Sig} (\be_{1})$, and $\Ga_{0} \in \Rbb^{r \times (r-u_{1})}$ be its completion. The coordinate version of the partial envelope model is
+\begin{align} \label{penv}
+\Y = \m + \Ga \et \X_{1} + \be_{2} \X_{2} + \eps, \quad
+\Sig = \Ga \Ome \Ga^{\top} + \Ga_{0} \Ome_{0} \Ga_{0}^{\top},
+\end{align}
+where $\be_{1} = \Ga \et$.  The matrix $\et \in \Rbb^{u_{1} \times p_{1}}$ carries the coordinates of $\be_{1}$ with respect to $\Ga$.   The matrices $\Ome \in \Rbb^{u_{1} \times u_{1}}$ and $\Ome_{0} \in \Rbb^{(r - u_{1}) \times (r - u_{1})}$ are positive definite, and they carry the coordinates of $\Sig$ with respect to $\Ga$ and $\Ga_{0}$. We call \eqref{penv} the partial envelope model.  When $u_{1} = 0$, we have $\be_{1} = 0$ and the partial envelope model reduces to the multivariate linear regression with $\Y$ being the responses and $\X_{2}$ being the predictors. When $u_{1} = r$, the partial envelope model degenerates to the standard model \eqref{reg} with $\Y$ being the responses and both $\X_{1}$ and $\X_{2}$ being the predictors.
+
+\subsection[Heteroscedastic envelope model]{Heteroscedastic envelope model}\label{sec:henv}
+The heteroscedastic envelope model \citep{Su2013} is derived to incorporate heteroscedastic error structure in the context of estimating multivariate means for different groups. 
+
+The standard model for multivariate mean estimation for $p$ groups can be written as
+\begin{align} \label{hsm}
+\Y_{(i)j} = \m + \be_{(i)} + \eps_{(i)j}, \quad i = 1, \cdots, p, \quad j = 1, \cdots, n_{(i)},
+\end{align}
+where the subscript $(i)$ indicates the $i$th group, $\Y_{(i)j} \in \Rbb^{r}$ is the $j$th observation vector in the $i$th group, $\m \in \Rbb^{r}$ is the grand mean over all the observations, $\be_{(i)} \in \Rbb^{r}$ is the difference between the mean of the $i$th group and the grand mean, and the error vector $\eps_{(i)j}$ has mean 0 and covariance $\Sig_{(i)}$. The $i$th group has $n_{(i)}$ observations and we assume that $\sum_{i = 1} ^{p} n_{(i)} \be_{(i)} = 0$.  If $\Sig_{(1)}=\cdots=\Sig_{(p)}$, \eqref{hsm} reduces to \eqref{reg} with $\X$ being $p$ group indicators.  
+
+Let $\B = (\be_{(1)}, \cdots, \be_{(p)})\in\Rbb^{r\times p}$ and $\Mcal$ be a collection of covariance matrices, i.e. $\Mcal = \{\Sig_{(i)} : i = 1, \cdots, p \}$.  We define the heteroscedastic envelope, denoted by $\Ecal_{\Mcal} (\B)$ or $\Ecal$, to be the smallest subspace that contains each $\be_{(i)}$ and decomposes every matrix in $\Mcal$, i.e., $\be_{(i)}\in\Ecal_{\Mcal} (\B)$ and $\Sig_{(i)}=\Proj_{\Ecal}\Sig_{(i)}\Proj_{\Ecal}+\Q_{\Ecal}\Sig_{(i)}\Q_{\Ecal}$ for $i = 1, \ldots, p$.  Let $\Ga \in \Rbb^{r \times u}$ be an orthonormal basis of $\Ecal_{\Mcal} (\B)$, where $u$ is the dimension of $\Ecal_{\Mcal} (\B)$, and let $\Ga_{0}\in \Rbb^{r \times (r-u)}$ be its completion.  Under this parametrization, \eqref{hsm} can be written as
+\begin{align} \label{henv}
+\Y_{(i)j} = \m + \Ga \et_{(i)} + \eps_{(i)j}, \quad \Sig_{(i)} = \Ga \Ome_{1(i)} \Ga^{\top} + \Ga_{0} \Ome_{0} \Ga_{0}^{\top},
+\end{align}
+where $\be_{(i)} = \Ga \et_{(i)}$, $\et_{(i)} \in \Rbb^{u}$ contains the coordinates of $\be_{(i)}$ with respect to the basis $\Ga$, $\Ome_{1(i)} \in \Rbb^{u \times u}$ and $\Ome_{0} \in \Rbb^{(r- u) \times (r - u)}$ are both positive definite,  and $\sum_{i = 1}^{p} n_{(i)} \et_{(i)} = 0$. We call \eqref{henv} the heteroscedastic envelope model.  When $u=r$, the heteroscedastic envelope model degenerates to  model (\ref{hsm}). 
+
+
+\subsection[Groupwise envelope model]{Groupwise envelope model}\label{sec:genv}
+The groupwise envelope model \citep{Park2017} is designed to accommodate both distinct regression coefficients and distinct error structures for different groups in the context of (\ref{reg}). 
+
+Suppose that each group has different regression coefficients and error covariance matrix, the multivariate linear regression model can be formulated as
+\begin{align} \label{greg}
+\Y_{(i)j} = \m_{(i)} + \be_{(i)} \X_{(i)j} + \eps_{(i)j}, \quad i= 1, \cdots, I, \quad j = 1, \cdots, n_{(i)},
+\end{align}
+where subscripts $(i)$ indicate the $i$th group, $\Y_{(i)j} \in \Rbb^{r}$ is the $j$th response vector in the $i$th group, $\m_{(i)} \in \Rbb^{r}$ is the intercept of the $i$th group, $\X_{(i)j} \in \Rbb^{p}$ is the $j$th covariate vector in the $i$th group, $\be_{(i)} \in \Rbb^{r \times p}$ is the regression coefficient matrix for the $i$th group, and the error vector $\eps_{(i)j}$ has mean 0 and covariance matrix $\Sig_{(i)}$. The sample size of the $i$th group is denoted as $n_{(i)}$ and the total sample size is $n = \sum_{i = 1}^{I} n_{(i)}$.   While \eqref{hsm} aims at estimating the mean for different groups and does not involve any predictors, \eqref{greg} studies the relationship between the response vector and the predictors in different groups.    
+
+Let $\B = (\be_{(1)}, \cdots, \be_{(I)})\in \Rbb^{r\times pI}$ and $\Mcal$ be a collection of covariance matrices, i.e. $\Mcal = \{\Sig_{(i)} : i = 1, \cdots, p \}$. The groupwise envelope, denoted by $\Ecal_{\Mcal} (\B)$ or $\Ecal$, is the smallest subspace that contains each $\text{span}(\be_{(i)})$ and decomposes every matrix in $\Mcal$, i.e., $\text{span}(\be_{(i)})\subseteq\Ecal_{\Mcal} (\B)$ and $\Sig_{(i)}=\Proj_{\Ecal}\Sig_{(i)}\Proj_{\Ecal}+\Q_{\Ecal}\Sig_{(i)}\Q_{\Ecal}$, for $i=1, \ldots, I$.  The dimension of $\Ecal_{\Mcal} (\B)$ is $u$ ($0\leq u\leq r$).   Take $\Ga \in \Rbb^{r \times u}$ to be an orthonormal basis of $\Ecal_{\Mcal} (\B)$, and  choose $\Ga_{0}\in\Rbb^{r \times (r-u)}$ such that $(\Ga, \Ga_{0}) $ is an orthogonal matrix. Then \eqref{greg} can be written as 
+\begin{align} \label{genv}
+\Y_{(i)j} = \m_{(i)} + \Ga \et_{(i)} \X_{(i)j} + \eps_{(i)j}, \quad \Sig_{(i)} = \Ga \Ome_{(i)} \Ga^{\top} + \Ga_{0} \Ome_{0} \Ga_{0}^{\top},
+\end{align}
+where $\be_{(i)}= \Ga \et_{(i)}$, $\et_{(i)} \in \Rbb^{u \times p}$ carries the coordinates of $\be_{(i)}$ with respect to $\Ga$, and both $\Ome_{(l)} \in \Rbb^{u \times u}$ and $\Ome_{0} \in \Rbb^{(r- u) \times (r - u)}$ are positive definite.  We call \eqref{genv} the groupwise envelope model.  When $I = 1$, the groupwise envelope model reduces to the response envelope model (\ref{env}).  By accounting for the common characteristics in  the response vector across groups and connecting the material information from all groups via $\Ecal_{\Mcal} (\B)$, the groupwise envelope model achieves more efficiency gains than fitting a separate response envelope model for each group. 
+
+\subsection[Scaled response envelope model]{Scaled response envelope model}\label{sec:senv}
+The scaled response envelope model \citep{Cook2013} is a scale-invariant version of the response envelope model.  Similar to principal component analysis or partial least squares, the response envelope model is not scale invariant.   The scaled response envelope model considers the scaling in the model building and  is invariant under rescaling of the responses.  Moreover, it has the potential to provide efficiency gains when the response envelope model degenerates to the standard model.  
+
+Let $1$,  $\lambda_{2}, \ldots, \lambda_{r}$ be the scaling parameters with $\lambda_{i} > 0$ for $i = 2, \ldots, r$, and let $\La$ be a diagonal matrix $\La = \text{diag} \{1, \lambda_{2}, \ldots, \lambda_{r} \} \in \Rbb^{r \times r}$.  The first scaling parameter is set to $1$ for identifiability.   Given $\La$, we assume that the scaled response $\Y_{N} = \La^{-1} \Y$ and the predictors $\X$ follows the response envelope model.  More specifically, the scaled regression coefficients $\La^{-1}\be$ and error covariance matrix $\La^{-1}\Sig\La^{-1}$ follow the following two conditions: (a) $\text{span}(\La^{-1}\be) \subseteq \Ecal_{\La^{-1} \Sig \La^{-1}} (\La^{-1} \be)$, and (b) $\La^{-1} \Sig \La^{-1} = \Proj_{\Ecal} \La^{-1} \Sig \La^{-1} \Proj_{\Ecal} + \Q_{\Ecal} \La^{-1} \Sig \La^{-1} \Q_{\Ecal}$, where $\Ecal$ is short for $\Ecal_{\La^{-1} \Sig \La^{-1}} (\La^{-1} \be)$ when it appears in subscripts.  These two conditions are exactly the same as conditions (i) and (ii) in response envelope (Section~\ref{sec:re}) after scaling.  Let $u$ be the dimension of $\Ecal_{\La^{-1} \Sig \La^{-1}} (\La^{-1} \be)$, $\Ga \in \Rbb^{r \times u}$ be an orthonormal basis of $\Ecal_{\La^{-1} \Sig \La^{-1}} (\La^{-1} \be)$, and $\Ga_{0}\in \Rbb^{r \times (r-u)}$ be a completion of $\Ga$.   Under this parameterization, \eqref{reg} can be written as
+\begin{align} \label{senv}
+\Y = \m + \La \Ga \et \X + \eps, \quad \Sig = \La \Ga \Ome \Ga^{\top} \La + \La \Ga_{0} \Ome_{0} \Ga^{\top}_{0} \La, 
+\end{align}
+where $\be = \La \Ga \et$, $\et \in \Rbb^{u \times p}$, both $\Ome  \in \Rbb^{u \times u}$ and $\Ome_{0} \in \Rbb^{(r - u) \times (r - u)}$ are positive definite.   We call \eqref{senv} the scaled response envelope model.  When $u \geq r-(r-1)/p$, the scaled response envelope model degenerates to the standard model (\ref{reg}).   Note that when $u \neq r$, the scaled envelope model is not nested within the standard model.  Therefore the likelihood ratio testing (LRT) is not suitable for selecting the dimension $u$.  
+
+\subsection[Predictor envelope model]{Predictor envelope model}\label{sec:xenv}
+The predictor envelope model \citep{Cook2013a} is derived for dimension reduction of the predictors in the context of \eqref{reg}.  It offers efficiency gains in the estimation of the regression coefficients, and also has a better prediction performance than the standard model.  Furthermore, it has a close connection to partial least squares.  To describe the predictor envelope model, we reformulate the  linear regression model  (\ref{reg}) to be consistent with the convention used in \citep{Cook2013a}
+\begin{align} \label{xreg}
+\Y = \m + \be^{\top}(\X - \m_{\X}) + \eps,
+\end{align}
+where $\Y \in \Rbb^{r}$ is the response vector, and $\X\in\Rbb^{p}$ is the stochastic predictor vector with mean $\m_{\X}$ and covariance $\Sig_{\X}$.  The error vector $\eps$ has mean 0 and covariance matrix $\Sig_{\Y|\X}$.  The regression coefficients are contained in $\be\in \Rbb^{p \times r}$, and $\m \in \Rbb^{r}$ is the intercept.  Here $\Y$ can be univariate response or multivariate response vector.  
+
+Let $\Scal$ denote a subspace of $\Rbb^{p}$.  We decompose $\X$ into a material part $\Proj_{\Scal} \X$ and an immaterial part $\Q_{\Scal} \X$ such that the following two conditions are satisfied $(i)$ $\COV (\Y, \Q_{\Scal} \X | \Proj_{\Scal} \X) = 0$ and $(ii)$ $\COV (\Proj_{\Scal} \X, \Q_{\Scal} \X) = 0$.  These two conditions imply that $\Q_{\Scal} \X$ does not affect the distribution of $\Y$ directly or through the association with $\Proj_{\Scal} \X$.  Conditions $(i)$ and $(ii)$ are equivalent to $(i)'$ $\text{span}(\be) \subseteq \Scal$ and $(ii)'$ $\Sig_{\X} = \Proj_{\Scal} \Sig_{\X} \Proj_{\Scal} + \Q_{\Scal} \Sig_{\X} \Q_{\Scal}$.   And the intersection of all $\Scal$ that satisfies $(i)'$ and $(ii)'$ is the $\Sig_{\X}$-envelope of $\be$, denoted by $\Ecal_{\Sig_{\X}} (\be)$ or $\Ecal$.  Its dimension is denoted by $u$.  Let $\Ga \in \Rbb^{p \times u}$ be an orthonormal basis of $\Ecal_{\Sig_{\X}} (\be)$, and $\Ga_{0} \in \Rbb^{p \times (p-u)}$ be its completion.  Under conditions $(i)'$ and $(ii)'$, \eqref{xreg} can be formulated as
+\begin{align} \label{xenv}
+\Y = \m + \et^{\top} \Ome^{-1} \Ga^{\top} (\X - \m_{\X}) + \eps, \quad \Sig_{\X} = \Ga \Ome \Ga^{\top} + \Ga_{0} \Ome_{0} \Ga_{0}^{\top},
+\end{align}
+where $\be = \Ga \Ome^{-1} \et$, $\et \in \Rbb^{u \times r}$, and $\Ome^{-1}\et$ carries the coordinates of $\be$ with respect to $\Ga$.  The matrices  $\Ome \in \Rbb^{u \times u}$ and $\Ome_{0} \in \Rbb^{(p - u) \times (p - u)}$ are positive definite.   We call \eqref{xenv} the predictor envelope model.   When $u = p$, the predictor envelope model reduces to the linear regression model~(\ref{xreg}).  When $u=0$, $\be=0$ and the covariance between $\X$ and $\Y$ is zero.  \cite{Cook2013a} shows that the predictor envelope model is at least as efficient as (\ref{xreg}) asymptotically.  Substantial efficiency gains can be achieved if $\|\Ome\|>\|\Ome_{0}\|$.
+
+A connection between partial least squares and the predictor envelope model is also established: In population, partial least squares and the predictor envelope model are estimating the same reduction $\Proj_{\Ecal}\X$, but they use different sample algorithms.  A popular sample algorithm for partial least squares is  SIMPLS algorithm \citep{Jong1993}, which is a moment-based iterative algorithm; while the predictor envelope model optimizes an objective function based on normal likelihood.  Both the SIMPLS estimator and predictor envelope estimator are $\sqrt{n}$-consistent.  But the predictor envelope estimator usually has a better performance in prediction than the SIMPLS estimator \citep{Cook2013a}. 
+
+\subsection[Simultaneos envelope model]{Simultaneous envelope model}\label{sec:stenv}
+The simultaneous envelope model \citep{Cook2015b} achieves efficiency gains by performing dimension reduction for both predictors and responses. 
+
+Under  model (\ref{xreg}), we assume that $r>1$.  Let $d \leq \text{min} (r, p)$ denote the rank of $\be$.  We consider the following two envelopes: 
+\begin{enumerate}
+\item 
+Predictor envelope $ \Ecal_{\Sig_{\X}} (\be)$ with dimension $d_{X}$, where $d \leq d_{X} \leq p$.
+\item
+Response envelope $ \Ecal_{\Sig_{\Y|\X}} (\be^{\top})$ with dimension $d_{Y}$, where $d \leq d_{Y} \leq r$.
+\end{enumerate}
+By imposing the predictor envelope and the response envelope simultaneously, we expect to obtain more efficiency gains in the estimation of $\be$ than using either the predictor envelope or response envelope alone. 
+
+Let $\Ph \in \Rbb^{p \times d_{X}}$ be an orthonormal basis of $\Ecal_{\Sig_{\X}} (\be)$, $\Ga \in \Rbb^{r \times d_{Y}}$ be an orthonormal basis of $\Ecal_{\Sig_{\Y|\X}} (\be^{\top})$, and $\Ph _{0} \in \Rbb^{p \times (p-d_{X})}$ and $\Ga_{0} \in \Rbb^{r \times (r-d_{Y})}$ be completions of $\Ph$ and $\Ga$ respectively.  Under this parameterization, \eqref{xreg} can be written as
+\begin{align} \label{stenv}
+\begin{array}{cl}
+\Y  = \m + \Ga \et^{\top} \Ph^{\top} (\X - \m_{\X}) + \eps, \\
+\Sig_{\X}  =  \Ph \Del \Ph^{\top} + \Ph_{0} \Del_{0} \Ph^{\top}_{0}, \\
+\Sig_{\Y|\X}  =  \Ga \Ome \Ga^{\top} + \Ga_{0} \Ome_{0} \Ga_{0}^{\top},
+\end{array}
+\end{align}
+where $\be = \Ph \et \Ga^{\top}$, $\et \in \Rbb^{d_{X} \times d_{Y}}$, the matrices $\Del \in \Rbb^{d_{X} \times d_{X}}$ , $\Del_{0} \in \Rbb^{(p - d_{X}) \times (p - d_{X})}$, $\Ome \in \Rbb^{d_{Y} \times d_{Y}}$, and $\Ome_{0} \in \Rbb^{(r - d_{Y}) \times (r - d_{Y})}$ are positive definite.  We call \eqref{stenv} the simultaneous envelope model.  When $d_{X} = p$, the simultaneous envelope model reduces to the response envelope model (\ref{env}). When $d_{Y} = r$, it reduces to the predictor envelope model (\ref{xenv}).   It degenerates to the linear regression model \eqref{xreg} when  $d_{X} = p$ and $d_{Y} = r$.
+
+\subsection[Scaled predictor envelope model]{Scaled predictor envelope model}\label{sec:sxenv}
+Like the scaled response envelope model, the scaled predictor envelope model \citep{Cook2016a} gives a scaled-invariant version of the predictor envelope model.   
+
+The scaled predictor envelope model allows different predictors to share the same scaling parameters.  Without loss of generality, suppose that the first $p_{1}$ predictors have scaling parameters $1$, the next $p_{2}$ predictors have scaling parameters $\lambda_{1}$, ..., and the last $p_{q}$ predictors have scaling parameters $\lambda_{q-1}$, where $\sum_{i = 1}^{q} p_{i} = p$.  Then we construct $\La \in \Rbb^{p \times p}$ to be a diagonal matrix with repeated diagonal elements $1, \cdots, 1, \lambda_{1}$, $ \cdots, \lambda_{1},$ $\cdots, \lambda_{q - 1}, \cdots, \lambda_{q - 1}$, where $\lambda_{1}, \cdots, \lambda_{q - 1}$ are $q-1$ positive numbers.  Given $\La$, $\Y$ and the scaled predictor $\X_{N} = \La^{-1} \X$ follows the predictor envelope model \eqref{xenv}.  Equivalently, $\be$ and $\Sig_{\X}$ satisfy (i) $\text{span}(\La\be)\subseteq\Ecal_{\La^{-1} \Sig_{\X}  \La^{-1}} (\La \be)$ and (ii) $\La^{-1} \Sig_{\X}  \La^{-1}=\Proj_{\Ecal}\La^{-1} \Sig_{\X}  \La^{-1}\Proj_{\Ecal}+ \Q_{\Ecal}\La^{-1} \Sig_{\X}  \La^{-1}\Q_{\Ecal}$, where $\Ecal$ is short for $\Ecal_{\La^{-1} \Sig_{\X}  \La^{-1}} (\La \be)$ when it appears in subscripts.  
+
+Suppose that the dimension of $\Ecal_{\La^{-1} \Sig_{\X}  \La^{-1}} (\La \be)$ is $u$.  Let $\Ga \in \Rbb^{p \times u}$ be an orthonormal basis of $\Ecal_{\La^{-1} \Sig_{\X}  \La^{-1}} (\La \be)$, and $\Ga_{0} \in \Rbb^{p \times (p-u)}$ be its completion.  Then (i) implies that there exists a matrix $\et\in\Rbb^{u\times r}$ such that $\La\be=\Ga\et$, and $\La^{-1} \Sig_{\X}  \La^{-1}$ can be written as $\La^{-1} \Sig_{\X}  \La^{-1}=\Ga \Ome \Ga^{\top}+\Ga_{0} \Ome_{0} \Ga_{0}^{\top}$, where $\Ome \in \Rbb^{u \times u}$ and $\Ome_{0} \in \Rbb^{(p - u) \times (p - u)}$ are both positive definite matrices. Using this parameterization, \eqref{xreg} is written as 
+\begin{align} \label{sxenv}
+\Y = \m + \et^{\top} \Ga^{\top} \La^{-1} (\X - \m_{\X}) + \eps, \quad \Sig_{\X} = \La \Ga \Ome \Ga^{\top} \La + \La \Ga_{0} \Ome_{0} \Ga_{0}^{\top} \La
+\end{align}
+where $\be = \La^{-1} \Ga \et$.  We call \eqref{sxenv} the scaled predictor envelope model.  When $u \geq p - (q - 1) / r$, (\ref{sxenv}) reduces to the standard linear regression \eqref{xreg}.   The scaled predictor envelope model is not nested within \eqref{xreg} if $u \neq p$, hence LRT cannot be applied for dimension selection. 
+
+\subsection[Envelope model in generalized linear models]{Envelope model in generalized linear models}\label{sec:glmenv}
+The envelope model can also be applied to generalized linear models (GLM) to achieve efficient estimation \citep{Cook2015a}. Let $Y$ be a random variable that belongs to an exponential family.  For simplicity, we restrict attention to the natural exponential family, which only has the natural parameter.  Let $f$ denote the probability mass function or density function of $Y$: $f(y | \theta) = \exp \{y \theta - b (\theta) + c(y)\}$, where $\theta$ is the natural parameter.  We assume that $\X \in \Rbb^{p}$ follows a multivariate normal distribution $N(\m_{\X}, \Sig_{\X})$.  The canonical link function is $\theta(\mu, \be) = \mu + \be^{\top} \X$, where $\theta(\mu, \be)$ is a smooth and monotonic function of $\E (Y | \X, \theta)$. 
+
+The conditional log likelihood is denoted by $\mathcal{C}(\theta) := \log f (y | \theta) = y \theta - b(\theta) + c(y)$, where $\theta = \mu + \be^{\top} \X$. For instance, $\mathcal{C}(\theta) = y\theta - \exp(\theta)$ in Poisson regression and $\mathcal{C}(\theta) = y \theta -\log ( 1 + \exp(\theta))$ in logistic regression. The standard estimator of $\be$ can be obtained by Fisher scoring.  
+
+To construct the envelope model under GLM, \cite{Cook2015a} considers the $\Sig_{\X}$-envelope of $\be$, denoted by $\Ecal_{\Sig_{\X}}(\be)$. Let $u$ denote its dimension, $\Ga\in\Rbb^{p \times u}$ be an orthonormal basis for $\Ecal_{\Sig_{\X}}(\be)$, and $\Ga_{0}\in\Rbb^{p \times (p-u)}$ be its completion.  Then $\be$ and $\Sig_{\X}$ have the structure $\be= \Ga \et$, where $\et \in \Rbb^{u}$ contains the coordinates of $\be$ with respect to $\Ga$; and $\Sig_{\X}=\Ga \Ome \Ga^{\top} + \Ga_{0} \Ome_{0} \Ga_{0}^{\top}$, where $\Ome \in \Rbb^{u \times u}$ and $\Ome_{0} \in \Rbb^{(p - u) \times (p - u)}$ are positive definite matrices.  Under the envelope parameterization, GLM can be written as
+\begin{align} \label{glmenv}
+\log f (y | \theta) = y \theta - b(\theta) + c(y), \qquad \theta = \mu + \et^{\top} \Ga^{\top} \X, \qquad \Sig_{\X} = \Ga \Ome \Ga^{\top} + \Ga_{0} \Ome_{0} \Ga_{0}^{\top}.
+\end{align}
+When $u = p$, (\ref{glmenv}) reduces to the standard GLM.  \cite{Cook2015a} shows that the envelope estimator is asymptotically at least as efficient as the standard GLM estimator.   The objective function of envelope estimation in this context is more complicated than other envelope models.  We will discuss the estimation in more details in Section~\ref{sec:alg}.  
+
+\subsection[Weighted envelope estimation]{Weighted envelope estimation}\label{sec:weighted}
+With all the preceding envelope models, the dimension of the envelope subspace $u$ must be decided before applying the envelope model to the data.  The selection of $u$ can be tricky sometimes, and it brings an extra source of variation of the envelope estimator.  The weighted envelope estimation \citep{Eck2017} considers a weighted estimator of $\be$ from all envelope models with $u=1, \ldots, r$.    It is derived  under the context of the response envelope model \eqref{env}, but the same idea can be applied to all the envelope models.  Specifically,  the weighted envelope estimator is defined as
+\begin{align} \label{wenv}
+\hat{\be}_{w} = \sum_{j = 1}^{r} w_{j} \hat{\be}_{j},
+\end{align}
+where the weights $w_{j}$ are positive numbers for $j = 1, \cdots, r$, and $\sum_{j = 1}^{r} w_{j} = 1$.   We can compute $w_{j}$ based on the Bayesian Information Criterion (BIC).  The BIC value for the envelope model with  $u=j$ is $b_{j} = -2l(\hat{\be}_{j}) + k(j) \log (n)$, where $l(\cdot)$ is the log likelihood function, $k(j)$ is the number of parameters in the envelope model with dimension $j$ and $n$ is the sample size.  Then the weight for the envelope model with $u=j$ is 
+\[
+w_{j} = \frac{\exp(-b_{j})}{\sum_{k = 1}^{r} \exp(-b_{k})}.
+\]
+\cite{Eck2017} shows that the weighted envelope estimator \eqref{wenv} is a $\sqrt{n}$-consistent estimator of $\be$.
+The variation of the weighted envelope estimator is evaluated by residual bootstrap.  We have implemented the weighted  envelopes estimator for the response envelope model, partial envelope model as well as predictor envelope model in \pkg{Renvlp}.   The users do not need to pick $u$ before using these estimators.
+
+\section[Algorithm]{Algorithm}\label{sec:alg}
+\subsection[Algorithm for the estimation of the envelope subspace]{Algorithm for the estimation of the envelope subspace}
+In this subsection, we discuss the algorithm to estimate the envelope subspace implemented in \pkg{Renvlp}.  In all envelope models, if the envelope subspace is known, the envelope estimator is easy to obtain by applying the standard method on the reduced response vector or / and reduced predictor vector.   Let $\Ga\in\mathbb{R}^{a\times b}$ $(a> b)$ be an orthonormal basis of the envelope subspace $\Ecal$.  The optimization of the envelope subspace takes three forms:
+\begin{eqnarray}
+\label{obj1} \widehat{\Ecal}&=&\mathop{\arg\min}_{\text{span}(\Ga)\in\mathcal{G}(a\times b)}  \;\log |\Ga^{\top} \M \Ga | + \log |\Ga^{\top} (\M +\U)^{-1} \Ga |, \\
+\label{obj2} \widehat{\Ecal}&=&\mathop{\arg\min}_{\text{span}(\Ga)\in\mathcal{G}(a\times b)}  \; \log |\Ga^{\top} \V^{-1} \Ga | + \sum_{i = 1} ^ {p} \frac{n_{(i)}}{n} \log |\Ga^{\top} \M_{(i)} \Ga |,\\
+\label{obj3} \widehat{\Ecal}&=&\mathop{\arg\min}_{\text{span}(\Ga)\in\mathcal{G}(a\times b)} \;-C_{n} (\alpha, \Ga \et_{\Ga}) + \frac{n}{2} \{ \log |\Ga^{\top} \Sam_{\X} \Ga| + \log |\Ga^{\top} \Sam_{\X}^{-1} \Ga | + \log |\Sam_{\X} | \},
+\end{eqnarray}
+where $\mathcal{G}(a\times b)$ denotes an $a$ by $b$ Grassmann manifold, $\M$, $\M+\U$, $\M_{(i)}$ $(i=1, \ldots, p)$  and $\V$ are positive definite matrices, $\Sam_{\X}$ denotes the sample covariance matrix of $\X$ and it is positive definite when $n>p$, $\X_{i}$ is the $i$-th sample of $\X$, and $C_{n}(\mu, \Ga \et_{\Ga})=\sum_{i=1}^{n}\mathcal{C}(\mu+\et_{\Ga}^{\top}\Ga^{\top}\X_{i})$ is the conditional log likelihood function in \eqref{glmenv} with $\mu$ fixed and $\et$ treated as a function of $\Ga$ (denoted by $\et_{\Ga}$).  
+
+The objective function in \eqref{obj2} is used in the heteroscedastic envelope model and groupwise envelope model; the objective function in \eqref{obj3} is used in the envelope model in GLM; and the objective function in \eqref{obj1} is used in all other envelope models.  In different envelope models, $\M$, $\U$ and other matrices take different forms.  For example, in response envelope model (c.f. Section \ref{sec:re}), $\M=\Sam_{\text{res}}$ and $\M +\U = \Sam_{\Y}$, where $\Sam_{\text{res}}$ is the sample covariance matrix of the residuals from the standard linear regression of $\Y$ on $\X$ and $\Sam_{\Y}$ is the sample covariance matrix of $\Y$.  In predictor envelope model (c.f. Section \ref{sec:xenv}), $\M=\Sam_{\X}-\Sam_{\X\Y}\Sam_{\Y}^{-1}\Sam_{\X\Y}^{\top}$ and $\M +\U = \Sam_{\X}$, where $\Sam_{\X\Y}$ is the sample covariance of $\X$ and $\Y$.
+
+The optimization problems in \eqref{obj1}, \eqref{obj2} and \eqref{obj3} all involve Grassmann manifold optimization, which can be slow in sizable problems.  To resolve this issue, \cite{Cook2016} introduced a re-parametrization of the parameters in the context of \eqref{obj1} that converts the Grassmann manifold optimization to an unconstrained matrix optimization.  We first review this re-parametrization with \eqref{obj1} and then generalize this technique to the objective functions in \eqref{obj2} and \eqref{obj3}.  
+
+Let $\Ga \in \Rbb^{a \times b}$ be an orthonormal basis of the envelope subspace $\Ecal$.  Without loss of generality, we assume the matrix $\Ga_{1}$ formed by the first $b$ rows of $\Ga$ is nonsingular.   Let $\Ga_{2}$ be the $(a-b)\times b$ matrix formed by the rest of the rows.  Then $\Ga$ can be partitioned as
+\begin{align} \label{repar}
+\Ga = \left( \begin{array}{c} \Ga_{1} \\
+						\Ga_{2} \end{array} \right)	
+		= \left( \begin{array}{c} \I_{b} \\
+						\Ga_{2} \Ga_{1}^{-1} \end{array} \right) \Ga_{1}
+		:= \left( \begin{array}{c} \I_{b} \\
+						\A \end{array} \right) \Ga_{1}
+		:= \G_{\A} \Ga_{1}.
+\end{align}
+Note that $\A$ depends on $\Ga$ only through $\text{span}(\Ga)=\Ecal$.  The re-parameterization in \eqref{repar} builds a one-to-one correspondence between $\Ecal$ and $\A$:  If we know about $\A$, then $\Ecal=\text{span}(\G_{\A})$.  If $\Ecal$ is given, we can take any of its orthonormal basis and go through the steps in \eqref{repar} to get $\A$.  Under this re-parametrization, the optimization in \eqref{obj1} is converted to
+\begin{align} \label{robj}
+\widehat{\A} = \mathop{\arg\min}_{\A\in\Rbb^{(a-b)\times b}}  \log | \G_{\A}^{\top}\M\G_{\A} | + \log | \G_{\A}^{\top} (\M+\U)^{-1} \G_{\A} |-2 \log | \G_{\A}^{\top} \G_{\A} |.
+\end{align}
+Note that the optimization in (\ref{robj}) does not involve manifold optimization and is unconstrained.  When $(r - u)u$ is small, the minimization in (\ref{robj}) can be carried out directly using standard optimization tools.  Otherwise, the optimization can be performed by the blockwise coordinate descent algorithm, treating each row of $\A$ as a block.   The details are included in \cite{Cook2016}.
+
+\cite{Cook2016} suggested four possible initial values of $\A$ computed from  the eigenvectors of $\M$ or $\M + \U$, and showed the asymptotic property of these initial values. 
+
+Now we apply the re-parametrization to \eqref{obj2} and \eqref{obj3}.  After some calculations, the optimization in \eqref{obj2} can be converted to 
+\begin{align} \label{robj2}
+\widehat{\A} = \mathop{\arg\min}_{\A\in\Rbb^{(a-b)\times b}} \log |\G_{\A}^{\top} \V^{-1} \G_{\A} | + \sum_{i = 1} ^ {p} \frac{n_{(i)}}{n} \log |\G_{\A}^{\top} \M_{(i)} \G_{\A} |-2 \log | \G_{\A}^{\top} \G_{\A}|,
+\end{align}
+and the optimization in \eqref{obj3} can be converted to
+\begin{align} \label{robj3}
+\widehat{\A} = \mathop{\arg\min}_{\A\in\Rbb^{(a-b)\times b}}- C_{n} (\mu, \G_{\A}\et^{\ast}) + \frac{n}{2} \big(\log | \G_{\A}^{\top} \Sam_{\X} \G_{\A} | + \log | \G_{\A}^{\top} \Sam_{\X}^{-1} \G_{\A} | -2 \log | \G_{\A}^{\top} \G_{\A} |\big),
+\end{align}
+where $\et^{\ast}\in\Rbb^{b}$ carries the coordinates of $\be$ with respect to $\G_{\A}$, i.e., $\be=\G_{\A}\et^{\ast}$, and $C_{n} (\mu, \G_{\A}\et^{\ast})=\sum_{i=1}^{n}\mathcal{C}(\mu+{\et^{\ast}}^{\top}\G_{\A}^{\top}\X_{i})$.  Under Poisson regression, $C_{n} (\mu, \G_{\A}\et^{\ast}) = \sum_{i = 1}^{n} [Y_{i} (\mu + \et^{\ast T} \G_{\A}^{\top} \X_{i}) - \exp(\mu + \et^{\ast T} \G_{\A}^{\top} \X_{i}) ]$. 
+
+The optimization of \eqref{robj2} and \eqref{robj3} can be performed similarly as \eqref{robj} using blockwise coordinate descent.  The initial values for solving \eqref{robj2} can be computed from the eigenvectors of $\V$ and $\sum_{i = 1}^{p} n_{(i)} \M_{(i)} / n$ using the same way as computing the initial value for \eqref{robj}.  To compute the initial value for \eqref{robj3}, we first fit the standard GLM to obtain $\widetilde{\mu}$ and $\widetilde{\be}$ (e.g. use the Fisher scoring method implemented in \proglang{R} package \pkg{stats}).   Then a $\sqrt{n}$-consistent initial value of $\A$ can be obtained by solving \eqref{robj} with $\U=\widetilde{\be}\widetilde{\be}^{\top}$ and $\M$ being the estimated asymptotic variance of $\widetilde{\be}$ \citep{Cook2015a}.  Specifically, the asymptotic variance of $\widetilde{\be}$ can be estimated by $\M=\sum_{i=1}^{n} (\X_{i}-\m_{\X(W)})\mathcal{C}''(\widetilde{\theta}_{i})(\X_{i}-\m_{\X(W)})^{\top}/n$, where $\mathcal{C}''$ denotes the second derivative of $\mathcal{C}$,  $\widetilde{\theta}_{i}=\widetilde{\mu}+\widetilde{\be}^{\top}\X_{i}$, $W_{i}=n\mathcal{C}''(\widetilde{\theta}_{i})/\sum_{i=1}^{n}\mathcal{C}''(\widetilde{\theta}_{i})$ and $\m_{\X(W)}=\sum_{i=1}^{n}W_{i}\X_{i}/n$.
+
+\subsection{Numerical demonstration}
+In this subsection, we compare our non-Grassmann estimation algorithm with the envelope coordinate descent (ECD) algorithm \citep{Cook2017} and the one-direction-at-a-time (1D) algorithm \citep{cook2016algorithms}.   The 1D algorithm estimates each column of the orthonormal basis of $\Ecal$ at a time.  The ECD algorithm is developed under the framework of the 1D algorithm.  It utilizes an approximation in estimating each column and turns out to be much faster than the 1D algorithm.  Both the ECD and 1D algorithms yield $\sqrt{n}$-consistent estimators.  In the simulation studies, the non-Grassmann, ECD and 1D algorithms are all implemented in \proglang{R}.   We compare the computing time and estimation accuracy among these algorithms.  The estimation accuracy is measured by the principal angle between two subspaces.  Its calculation is described in \cite{knyazev2002principal}.   The convergence criterion is met when the relative change of the objective function is less than $10^{-3}$ or the number of iteration reaches $100$.  The computing time is recorded on a Macbook with 1.3GHz dual-core Intel Core i5 and RAM 4GB.
+
+The first simulation focuses on the computing time.  We adopted the simulation settings in \cite{Cook2017} and estimated the envelope subspace with the objective function \eqref{obj1} given $\M$ and $\U$.  We fixed $r=200$ and considered three scenarios.  For each scenario, we considered $u=5$ and $u=10$, and generated the matrices $\M$ and $\U$ as follows
+\begin{align*} \label{sim1}
+& \M = \left\{ 
+\begin{aligned} 
+ & \Ga \Ome \Ga^{\top} + \Ga_{0} \Ome_{0} \Ga_{0}^{\top}, && \text{for Scenario I}, \\
+ & \Ga \Ga^{\top} + 0.01 \Ga_{0} \Ga_{0}^{\top}, && \text{for Scenario II}, \\
+ & 0.01 \Ga \Ga^{\top} + \Ga_{0} \Ga_{0}^{\top}, && \text{for Scenario III}, \end{aligned} \right. \\
+& \U = \Ga \Ph \Ga^{\top}, \quad \text{for all scenarios,}
+\end{align*}
+where $\A\in\Rbb^{u\times u}$, $\B\in\Rbb^{(r-u)\times (r-u)}$ and $\C\in\Rbb^{u\times u}$ were matrices containing independent uniform $(0, 1)$ variates, and $\Ome=\A \A^{\top}$, $\Ome_{0}=\B\B^{\top}$ and $\Ph=\C\C^{\top}$.  The matrix $(\Ga, \Ga_{0})$ was obtained by normalizing an $r \times r$ matrix of independent uniform (0, 1) variates.  After $\M$ was generated, we added $0.0001 \I_{r}$ to $\M$ to assure that $\M$ is positive definite.  
+
+
+For each $u$ in each scenario, $50$ replications were generated.  The results were summarized in Table~\ref{tab:mod1}, where   each cell was the averaged computing time with the standard deviation in parentheses.  The angle between the true envelope subspace and the estimated envelope subspace was less than $10^{-5}$ for all algorithms in each replication, so it is not reported in the table.    Under this setting, the non-Grassmann algorithm is about five to ten times faster than the ECD algorithm.   The ECD algorithm is faster than the 1D algorithm in Scenario I and about the same as the  1D algorithm in Scenarios II and III.  
+
+
+\begin{table}[htbp] 
+\centering
+\begin{tabular}{ clclclclclc  }
+\hline
+Scenarios & $u$ & non-Grassmann & ECD & 1D \\
+\hline
+\multirow{2}{*}{Scenario I} 
+& 5 & 0.31 (0.017) & 1.67 (0.082) & 4.24 (0.340) \\
+& 10 & 0.33 (0.017) & 3.53 (0.262) & 9.33 (0.396) \\
+\hline
+\multirow{2}{*}{Scenario II} 
+& 5 & 0.30 (0.020) & 1.82 (0.048) & 1.21 (0.028) \\
+& 10 & 0.32 (0.017) & 3.62 (0.070) & 2.35 (0.033) \\
+\hline
+\multirow{2}{*}{Scenario III} 
+& 5 & 0.31 (0.016) & 1.80 (0.032) & 1.21 (0.021) \\
+& 10 & 0.33 (0.016) & 3.36 (0.043) & 2.32 (0.033) \\
+\hline
+\end{tabular}
+\caption{Computing time (in seconds) for each algorithm.} 
+\label{tab:mod1}
+\end{table}
+
+The second simulation focuses on estimation accuracy.  The simulation settings are the same as in \cite{Cook2016}, which is under the context of the response envelope model.  We set  $n=250$, $r = 100$, $p=100$ and varied $u$ from $1$ to $90$.  The elements in $\X$ were generated as independent $N(0, 20^2)$.  The matrix $(\Ga, \Ga_{0})$ was obtained by normalizing an $r \times r$ matrix of independent uniform $(0, 1)$ variates, and the elements in $\et \in \Rbb^{u \times p}$ were generated as independent uniform $(0, 10)$ variates.  The intercept and the coefficients were $\m = 0$ and $\be = \Ga \et$.  First, we considered the setting where the immaterial part of $\Y$ is more variant than the material part of $\Y$ and set the error covariance matrix as $\Sig = \Ga \Ome \Ga^{\top} + \Ga_{0} \Ome_{0} \Ga_{0}^{\top}$, where $\Ome = \A \A^{\top}$, $\Ome_{0} = 25\mathbf{C} \mathbf{C}^{\top}$.  The elements in $\A \in \Rbb^{u \times u}$ and $\mathbf{C} \in \Rbb^{(r - u) \times (r - u)}$ were independent $N(0, 1)$ variates.  We generated $50$ replications and recorded the angle between the true envelope subspace and the estimated subspace as well as the computing time for all three algorithms.  The results are summarized in Table~\ref{tab:mod2}.   The ECD algorithm is faster and has a smaller angle when $u\leq 50$.  However, as $u$ increases, the advantage of the non-Grassmann algorithm becomes more apparent.     The 1D algorithm is inferior than the non-Grassmann algorithm in both accuracy and computational efficiency when $u>10$.
+
+\begin{table}[htbp] 
+\centering
+\begin{tabular}{cccc}
+\hline
+u & non-Grassmann & ECD & 1D\\
+\hline
+1 & \;\,0.67 (0.26) & \;\,0.66 (\;\,0.26) & \;\,0.67 (\;\,0.27) \\
+5 & \;\,3.04 (0.74) & \;\,2.18 (\;\,0.28) & \;\,2.17 (\;\,0.29)\\
+10 & \;\,3.94 (0.78) & \;\,2.93 (\;\,0.30) & \;\,2.88 (\;\,0.31) \\
+20 & \;\,4.79 (0.72) & \;\,3.76 (\;\,0.55) & 16.86 (30.51) \\
+30 & \;\,5.91 (0.92) & \;\,4.33 (\;\,0.39) & 21.09 (34.17) \\
+40 & \;\,6.44 (0.81) & \;\,4.88 (\;\,0.67) & 21.27 (33.38) \\
+50 & \;\,7.12 (1.10) & \;\,7.01 (11.99) & 27.68 (36.49) \\
+60 & \;\,7.60 (1.48) & \;\,9.27 (16.65) & 39.63 (39.22) \\
+70 & \;\,8.46 (1.78) & \;\,9.57 (16.26) & 48.71 (38.73) \\
+80 & \;\,8.84 (2.50) & 17.20 (27.02) & 41.49 (33.13) \\
+90 & \;\,9.72 (6.69) & 27.39 (35.03) & 33.00 (23.04) \\
+%99 & \;\,1.99 (1.46) & 18.70 (29.14) & 17.10 (28.73) \\
+\hline
+\hline
+u & non-Grassmann & ECD & 1D \\
+\hline
+1 & 0.09 (0.01) & 0.09 (0.01) & \;\,0.28 (0.09) \\
+5 & 2.36 (2.49) & 0.43 (0.02) & \;\,1.45 (0.25) \\
+10 & 3.38 (2.77) & 0.79 (0.02) & \;\,2.69 (0.30) \\
+20 & 4.49 (3.23) & 1.35 (0.03) & \;\,4.98 (0.41) \\
+30 & 4.45 (3.61) & 1.77 (0.03) & \;\,6.91 (0.52) \\
+40 & 6.09 (3.76) & 2.04 (0.04) & \;\,8.27 (0.60) \\
+50 & 5.11 (3.33) & 2.28 (0.05) & \;\,9.40 (0.70) \\
+60 & 4.95 (2.84) & 2.40 (0.07) & 10.24 (0.77) \\
+70 & 3.68 (1.90) & 2.50 (0.13) & 11.10 (0.80) \\
+80 & 2.79 (1.35) & 2.66 (0.16) & 11.66 (0.75) \\
+90 & 1.39 (0.47) & 3.23 (0.32) & 11.74 (0.99) \\
+%99 & 0.22 (0.02) & 7.36 (1.04) & 11.04 (1.18) \\
+\hline
+\end{tabular}
+\caption{Upper panel: Angles between the true envelope subspace and the estimated envelope subspace.  Lower panel: Computing time (in seconds).  Each cell contains the average value from $50$ replications with the standard deviation in parentheses.}
+\label{tab:mod2}
+\end{table}
+
+We repeated the simulation with the setting that the material part of $\Y$ is more variant than the immaterial part of $\Y$.  The error covariance matrix was generated exactly the same as in the last setting except that $\Ome = 25\A \A^{\top}$, $\Ome_{0} = \mathbf{C} \mathbf{C}^{\top}$.  In this setting, estimating the envelope subspace is more challenging.  The results are summarized in Table \ref{tab:mod3}.  Although the non-Grassmann algorithm and the ECD algorithm have about the same accuracy time when $u$ is not large, the non-Grassmann algorithm is much faster than the ECD algorithm.  The 1D algorithm is inferior than the competitors, both in terms of accuracy and computational efficiency. 
+
+\begin{table}[htbp] 
+\centering
+\begin{tabular}{cccc}
+\hline
+$u$ & non-Grassmann & ECD & 1D\\
+\hline
+1 & \;\,0.30 (0.06) & \;\,0.30 (\;\,0.06) & \;\,0.30 (\;\,0.06) \\
+5 & \;\,0.77 (0.06) & \;\,0.77 (\;\,0.07) & \;\,0.77 (\;\,0.07)\\
+10 & \;\,0.90 (0.08) & \;\,0.90 (\;\,0.08) & \;\,2.26 (\;\,5.47) \\
+20 & \;\,1.09 (0.08) & \;\,1.09 (\;\,0.08) & \;\,4.49 (\;\,6.71) \\
+30 & \;\,1.24 (0.10) & \;\,1.24 (\;\,0.11) & 13.87 (19.58) \\
+40 & \;\,1.33 (0.10) & \;\,1.33 (\;\,0.11) & 13.57 (15.80) \\
+50 & \;\,1.49 (0.14) & \;\,1.50 (\;\,0.15) & 24.55 (32.16) \\
+60 & \;\,1.57 (0.19) & \;\,1.59 (\;\,0.22) & 16.32 (26.51) \\
+70 & \;\,1.56 (0.17) & \;\,1.60 (\;\,0.30) & 11.06 (21.20) \\
+80 & \;\,1.54 (0.19) & \;\,8.61 (24.16) & 12.18 (25.78) \\
+90 & \;\,1.31 (0.21) & 15.53 (32.69) & 12.59 (28.22) \\
+%99 & \;\,0.22 (0.15) & 36.01 (44.29) & \;\,3.85 (17.75) \\
+\hline
+\hline
+$u$ & non-Grassmann & ECD & 1D \\
+\hline
+1 & 0.07 (0.02) & \;\,0.07 (0.01) & \;\,0.27 (0.01) \\
+5 & 0.18 (0.03) & \;\,0.35 (0.20) & \;\,1.36 (0.25) \\
+10 & 0.28 (0.06) & \;\,0.82 (0.33) & \;\,2.71 (0.38) \\
+20 & 0.38 (0.11) & \;\,2.12 (0.66) & \;\,5.17 (0.43) \\
+30 & 0.43 (0.19) & \;\,4.91 (0.96) & \;\,7.03 (0.32) \\
+40 & 0.55 (0.19) & \;\,7.85 (0.87) & \;\,8.52 (0.47) \\
+50 & 0.61 (0.28) & \;\,9.66 (0.80) & \;\,9.66 (0.48) \\
+60 & 0.74 (0.30) & 11.18 (0.69) & 10.82 (0.64) \\
+70 & 0.69 (0.33) & 12.15 (0.82) & 11.58 (0.77) \\
+80 & 0.59 (0.30) & 13.02 (0.80) & 11.91 (0.75) \\
+90 & 0.43 (0.17) & 14.53 (0.82) & 12.13 (0.74) \\
+%99 & 0.20 (0.03) & 14.37 (2.10) & 13.24 (1.13) \\
+\hline
+\end{tabular}
+\caption{Upper panel: Angles between the true envelope subspace and the estimated envelope subspace.  Lower panel: Computing time (in seconds).  Each cell contains the average value from $50$ replications with the standard deviation in parentheses.}
+\label{tab:mod3}
+\end{table}
+
+\section[Structure of Renvlp]{Structure of \pkg{Renvlp}}\label{sec:imp}
+
+The \pkg{Renvlp} package implements all the envelope models discussed in Section 2 based on the non-Grassmann algorithm described in Section 3. The envelope models supported by \pkg{Renvlp} along with the corresponding \proglang{R} function names are presented in Table \ref{tab:rmodel}.  For example, the function \code{env} implements the response envelope model and the function \code{genv} implements the groupwise envelope model.  Besides these main functions, \pkg{Renvlp} includes auxiliary tools that select the dimension of the envelope subspace, and inference tools which perform bootstrapping, prediction and hypothesis testing under different envelope models. The \pkg{Renvlp} package depends on \proglang{R} package \pkg{Rsolnp} \citep{Ghalanos2015} for the estimation of the scaled response envelope model and scaled predictor envelope model.  
+
+\begin{table}[htbp] 
+\centering
+\begin{tabular}{ c  l }
+\hline
+
+Function name &  \hspace{1.2 in} Model \\
+\hline
+\code{env} & Response envelope model (Section \ref{sec:re})\\
+\code{penv} & Partial envelope model (Section \ref{sec:penv}) \\
+\code{henv} & Heteroscedastic envelope model (Section \ref{sec:henv}) \\
+\code{genv} & Groupwise envelope model (Section \ref{sec:genv})\\
+\code{senv} & Scaled response envelope model (Section \ref{sec:senv})\\
+\code{xenv} & Predictor envelope model (Section \ref{sec:xenv})\\
+\code{stenv} & Simultaneous envelope model (Section \ref{sec:stenv})\\
+\code{sxenv} & Scaled predictor envelope model (Section \ref{sec:sxenv})\\
+\code{logit.env} & Envelope model in logistic regression (Section \ref{sec:glmenv})\\
+\code{pois.env} & Envelope model in poisson regression (Section \ref{sec:glmenv})\\
+\code{weighted.env} & Weighted response envelope estimation (Section \ref{sec:weighted})\\
+\code{weighted.penv} & Weighted partial envelope estimation (Section \ref{sec:weighted})\\
+\code{weighted.xenv} & Weighted predictor envelope estimation (Section \ref{sec:weighted})\\
+\hline
+\end{tabular}
+\caption{A list of models supported by \pkg{Renvlp}}
+\label{tab:rmodel}
+\end{table}
+
+\subsection[Main functions]{Main functions}
+Given the predictors and responses, the main functions \code{Function name} fit the corresponding envelope model with the specified envelope dimension $u$.   The corresponding \code{Function name} for different envelope model is given in  Table~\ref{tab:rmodel}.  The outputs of the main functions are the envelope estimators as well as a few important statistics.   All the main functions have the same basic structure for inputs and outputs, but they vary slightly according to different models.  For instance,  \code{weighted.env}  does not require the users to specify $u$; and \code{stenv} requires the users to specify the dimensions for both the predictor envelope $\Ecal_{\Sig_\X}(\be)$ and the response envelope $\Ecal_{\Sig_{\Y\mid\X}}(\be^{\top})$.   We take \code{env} as an example to explain the usage of the function, since it presents the basic structure of the main functions.  The syntax of \code{env} is
+<<eval=FALSE, prompt=FALSE>>=
+env(X, Y, u, asy = TRUE, init = NULL)
+@
+The required inputs are \code{X}, \code{Y} and \code{u}, where \code{X} contains the predictors, \code{Y} contains the multivariate responses and \code{u} is the dimension of the envelope subspace.  The selection of the dimension is included in Section~\ref{sec:u}.   The optional inputs are \code{asy} and \code{init}: \code{asy} is the flag for computing the asymptotic variance of the envelope estimator. The default setting is \code{TRUE}.  If only the envelope estimators are needed, the flag can be set to \code{asy = FALSE}.  \code{init} is the user-specified initial value of \code{Gamma}.  If no starting value is provided, \code{env} will use the starting value suggested in \cite{Cook2016}. 
+
+The output of the main function is a list which consists of the envelope estimators and a few important statistics.  The envelope estimators include \code{beta}, \code{Sigma}, \code{Gamma}, \code{Gamma0}, \code{eta}, \code{Omega}, \code{Omega0} and \code{mu}, which are estimators of $\be$, $\Sig$, $\Ga$, $\Ga_{0}$, $\et$, $\Ome$, $\Ome_0$ and $\m$ in \eqref{env}.  The statistics in the output list are \code{loglik}, the maximized log likelihood; \code{covMatrix}, the asymptotic covariance of the vectorized \code{beta}; \code{asySE},  the asymptotic standard error for elements in \code{beta}; \code{ratio}, the asymptotic standard error ratio of the standard multivariate linear regression estimator over the envelope estimator and \code{n}, the number of observations in the dataset.  An illustration is given in Section~\ref{sec:ilst}.
+
+\subsection{Selection of the dimension}\label{sec:u}
+The functions \code{u.Function name} choose the dimension of the envelope subspace $u$ based on AIC, BIC and likelihood ratio testing (LRT) with specified significance level. For example, \code{u.env} selects $u$ under the response envelope model, and \code{u.henv} selects $u$ under the heteroscedastic envelope model.  We again use the example of the response envelope model.  The syntax of \code{u.env} is
+<<eval=FALSE, prompt=FALSE>>=
+u.env(X, Y, alpha = 0.01)
+@
+The required inputs are \code{X} and \code{Y}, which are the predictors and responses.  The optional input \code{alpha} is the significance level for LRT.   The default value is $0.01$.
+
+The output of \code{u.Function name} includes \code{u.aic}, \code{u.bic} and \code{u.lrt}, which are dimensions selected by AIC, BIC and LRT; as well as \code{loglik.seq}, \code{aic.seq} and \code{bic.seq}, which are sequences of log likelihood, AIC value and BIC for $u= 0, \ldots, r$. 
+
+\subsection[Inference functions]{Inference functions}
+\pkg{Renvlp} supports inference tools including bootstrapping, prediction and hypothesis testing. 
+
+The function \code{boot.Function name} computes the standard errors of the envelope estimator of $\be$ by residual bootstrap.  For the response envelope model, the syntax of \code{boot.env} is 
+<<eval=FALSE, prompt=FALSE>>=
+boot.env(X, Y, u, B)
+@
+The inputs \code{X}, \code{Y}, \code{u} and \code{B} are predictors, responses, dimension of the envelope subspace, and the number of bootstrap samples.  The output is a matrix with the same size as $\be$ containing the standard error for each element in the estimated $\be$. 
+
+Prediction under the envelope models is performed by \code{pred.Function name}.  For example,
+<<eval=FALSE, prompt=FALSE>>=
+pred.env(m, Xnew)
+@
+performs prediction under the response envelope model.  The input \code{m} is the output from the main function \code{env} and the input \code{Xnew} is the value of the predictor.  The outputs include \code{value}, which is the fitted or the predicted value evaluated at \code{Xnew}; \code{covMatrix.estm} and \code{SE.estm}, which are the covariance matrix  of the fitted value and standard error of each element in the fitted value; \code{covMatrix.pred} and \code{SE.pred}, which are the covariance matrix  of the predicted value and standard error of each element in the predicted value. The covariance matrix and standard errors are estimated with normality assumption.
+
+The function \code{cv.Function name} provides the prediction errors using m-fold cross validation.  If $\Y_{\text{pred}}$ is the predicted value and $\Y_{\text{o}}$ is the true value, then the prediction error computed in \code{cv.Function name} is the square root of $(\Y_{\text{pred}}-\Y_{\text{o}})^{\top}(\Y_{\text{pred}}-\Y_{\text{o}})$.  For the response envelope model, the syntax of \code{cv.env} is
+<<eval=FALSE, prompt=FALSE>>=
+cv.env(X, Y, u, m, nperm)
+@
+The inputs of this function \code{X}, \code{Y}, \code{u}, \code{m} and \code{nperm} are predictors, responses, dimension of the envelope subspace, the number of folds, and the number of permutations.  The data is divided into \code{m} parts randomly and each part is in turn used for testing while the rest \code{m} - 1 parts are used for training. This process is repeated for \code{nperm} times and the output is the average prediction error. 
+
+The function \code{testcoef.Function name} tests for the hypotheses 
+\begin{equation}\label{sec:hy}
+\text{H}_{0}: \mathbf{L} \be \mathbf{R} = \A\quad \text{versus} \quad \text{H}_{a}:  \mathbf{L} \be \mathbf{R} \neq \A,
+\end{equation} 
+where $\mathbf{L}$, $\mathbf{R}$ and $\A$ are constant matrices.  The test statistics is $\text{vec} (\mathbf{L} \widehat{\be} \mathbf{R} - \mathbf{A}) \widehat{\mathbf V}^{-1} \text{vec} (\mathbf{L} \widehat{\be} \mathbf{R} - \mathbf{A}) ^{\top}$, where $\widehat{\be}$ is the envelope estimator, $\text{vec}$ is the vector operator that vectorize a matrix into a vector columnwise, and $\widehat{\mathbf V}$ is the estimated asymptotic covariance of $\text{vec} (\mathbf{L} \widehat{\be} \mathbf{R} - \mathbf{A})$.   Suppose $\A$ is a $d_{1}$ by $d_{2}$ matrix.  The reference distribution is chi-squared distribution with degrees of freedom $d_{1} * d_{2}$.   To test hypothesis \eqref{sec:hy} under the envelope model, we use 
+<<eval=FALSE, prompt=FALSE>>=
+testcoef.env(m, L, R, A)
+@
+The input \code{m} is the output from the main function \code{env}, and the inputs \code{L}, \code{R} and \code{A} correspond to the matrices $\mathbf{L}$, $\mathbf{R}$ and $\mathbf{A}$ in \eqref{sec:hy}.  The output of \code{testcoef.env} includes the test statistic, the degrees of freedom of the reference chi-squared distribution, the $p$-value of the test, and $\widehat{\mathbf V}$, the estimated covariance matrix of $\text{vec} (\mathbf{L} \widehat{\be} \mathbf{R}- \mathbf{A})$. 
+
+\section{Illustration}\label{sec:ilst}
+This section illustrates the usage of the main functions, dimension selection functions and inference functions with the response envelope model.    The Berkeley guidance study \citep{tuddenham1953physical} contains height measurement for $39$ boys and $54$ girls born in 1928--1929 in Berkeley, CA.  For simplicity, we take heights at ages 13 and 14 to be the bivariate response $\Y=(Y_{1}, Y_{2})^{\top}$, and gender to be the predictor $X$.  The predictor takes value $1$ or $0$ to indicate boys or girls.  Therefore $\be=\Ebf(\Y\mid X=1)-\Ebf(\Y\mid X=0)$ indicate the height difference between boys and girls.  The data is included in the package.  We first load the data and select the dimension of the envelope subspace with \code{u.env}.
+\begin{minipage}{\columnwidth}
+<<>>=
+library("Renvlp")
+data("Berkeley")
+X <- Berkeley[ , 1]
+Y <- Berkeley[ , c(22, 24)]
+u <- u.env(X, Y)
+u
+@
+\end{minipage}
+
+\vspace{1em}
+From the output of \code{u.env},  BIC and LRT agree that the dimension of the envelope subspace is $1$ while AIC picks the dimension to be $2$.  AIC tends to overfit the model when the sample size is small.  So we fit the envelope model with $u=1$. 
+<<>>=
+m <- env(X, Y, 1)
+m$beta
+m$Gamma
+m$Gamma0
+@
+The envelope estimator of $\be$ is $(-1.72, 1.66)^{\top}$, indicating that girls are $1.72$ cm taller than boys on average at age 13 but boys $1.66$ cm are taller than girls on average at age 14.  By the construction of the envelope model \eqref{env}, $\Ga_{0}^{\top}\Y\approx0.71(Y_{1}+Y_{2})$ is immaterial to the variation in $X$ and $\Ga^{\top}\Y\approx-0.71(Y_{1}-Y_{2})$ is material to the variation in $X$.  This indicates that the sum of the height $Y_{1}+Y_{2}$ does not differ between boys and girls at these ages.  It is the difference of the height $Y_{1}-Y_{2}$ that carries the gender information.   We also fit the standard model to the data.  When $u=2$, the envelope model reduces to the standard model.  So we can simply use the \code{env} function with \code{u = 2}.
+<<>>=
+m2 <- env(X, Y, 2)
+m2$beta
+@
+The standard estimator indicates that the boys are slightly taller than girls at age 13 and this height difference is more pronounced at age 14.  This shows a discrepancy between the envelope model \code{m} and the standard model \code{m2} on whether boys or girls are taller at age 13.  To compare the two estimators, we calculate the standard errors of each estimator.
+<<>>==
+m$asySE / sqrt(93)
+m2$asySE / sqrt(93)
+@
+To obtain the standard errors of each estimator, we use the asymptotic standard deviation \code{asySE} divided by the square root of the sample size $93$. Notice that the standard errors of the standard estimator are $7.4$ and $8.0$ times as large as that of the envelope estimator, which indicates the envelope estimator is much more efficient than the standard estimator. \code{asySE} is calculated by assuming normality.  The sample distribution of boys and girls both resembles normal, so the estimates of the standard errors should be reliable.  Nevertheless, we also estimated the standard errors using bootstrap.
+<<>>==
+bootse1 <- boot.env(X, Y, 1, 200)
+bootse2 <- boot.env(X, Y, 2, 200)
+bootse1
+bootse2
+@
+The bootstrap standard errors are very close to the standard errors derived from asymptotic standard errors.  By investigating the standard errors, the height difference at age 13 under the standard model is not significant, while the envelope model detects that the girls are significantly taller than the boys.  This is a result of the efficiency gains from the envelope model.  We also perform a hypothesis testing to confirm that the first element in $\be$ is $0$, i.e., 
+\[
+\text{H}_{0}: (1, 0)^{\top} \be  = 0\quad \text{versus} \quad \text{H}_{a}:  (1, 0)^{\top} \be \neq 0,
+\]
+both under the standard model and the envelope model.  
+<<>>==
+L <- matrix(c(1, 0), 1, 2)
+R <- as.matrix(1)
+A <- as.matrix(0)
+hres <- testcoef.env(m, L, R, A)
+hres2 <- testcoef.env(m2, L, R, A)
+hres
+hres2
+@
+The $p$ values indicate that the height difference is significant under the envelope model and not significant under the standard model, which is consistent with our preceding discussion.  At last, suppose we want to predict heights at ages 13 and 14 for a boy, we can use \code{pred.env}.
+<<>>==
+pres <- pred.env(m, 1)
+pres
+@
+The heights of a boy at ages 13 and 14 are predicted to be $158.66$cm and $166.23$cm, with prediction standard error $7.77$cm and $7.83$cm.  
+
+\section{Conclusion}\label{sec:conc}
+The \proglang{R} package \pkg{Renvlp} aims to provide  accurate and computational efficient  estimations for the envelope models.  It includes the fundamental envelope models as well as the recent developments.  The structure of the package is straightforward: for a particular envelope model, it contains the main function that fits the model, the dimension selection tools and the inference functions.  So it is easy for the developers to include new models or extend the functionality of the package.  The package will be uploaded to the Comprehensive \proglang{R} Archive Network (CRAN) and under constant maintenance. 
+
+\section*{Acknowledgements}
+The authors would like to sincerely thank Yeonhee Park for allowing us to modify the groupwise envelope model codes for use in the \pkg{Renvlp} package. This work is supported by the Graduate School Fellowship (GSF) at the University of Florida and a grant from the National Science Foundation DMS 1407460.
+
+\bibliography{reference}
+
+
+
+\end{document}
+
+
