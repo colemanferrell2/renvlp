@@ -58,7 +58,7 @@ m <- xenv(X, Y, 4)
 m
 m$beta
 
-
+## Fit the partial least squares
 \dontrun{m1 <- pls::simpls.fit(X, Y, 4)}
 \dontrun{m1$coefficients}
 }

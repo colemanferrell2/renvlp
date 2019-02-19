@@ -11,6 +11,10 @@ u.senv <- function(X, Y){
   bic.seq <- -2 * loglik.seq + log(n) * npara.seq
   u.aic <- which.min(aic.seq) - 1
   u.bic <- which.min(bic.seq) - 1
+  if (min(aic.seq) == aic.seq[r+1]) {
+      u.aic = r
+      u.bic = r
+  }
   return(list(u.aic = u.aic, u.bic = u.bic, 
               aic.seq = aic.seq, bic.seq = bic.seq))
 }

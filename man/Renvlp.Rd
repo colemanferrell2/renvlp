@@ -15,10 +15,10 @@ This package contains functions for estimating envelope models including respons
 Package: \tab Renvlp\cr
 Type: \tab Package\cr
 Version: \tab 2.5\cr
-Date: \tab 2018-01-18\cr
+Date: \tab 2019-02-18\cr
 License: \tab GPL-2\cr
-Imports: \tab Rsolnp, stats\cr
-Suggests: \tab Mass, knitr\cr
+Imports: \tab Rsolnp\cr
+Suggests: \tab Mass, stats\cr
 }
 }
 

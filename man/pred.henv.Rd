@@ -27,8 +27,6 @@ data(waterstrider)
 X <- waterstrider[ , 1]
 Y <- waterstrider[ , 2:5]
 
-\dontrun{u <- u.henv(X, Y)}
-\dontrun{u}
 
 \dontrun{m <- henv(X, Y, 2)}
 

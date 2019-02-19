@@ -1,4 +1,4 @@
-weighted.env <- function(X, Y, bstrpNum = 0, min.u = 1, max.u = ncol(Y), boot.resi = "full") {
+weighted.env <- function(X, Y, bstrpNum = 0, min.u = 1, max.u = ncol(as.matrix(Y)), boot.resi = "full") {
   
   bstrpNum <- ceiling(bstrpNum)
   if (bstrpNum < 0) stop("The number of bootstrap samples should be a positive integer.")

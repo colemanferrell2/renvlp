@@ -25,7 +25,7 @@ data(wheatprotein)
 X <- wheatprotein[, 1:6]
 Y <- wheatprotein[, 7]
 
-B <- 100
+\dontrun{B <- 100}
 \dontrun{bootse <- boot.xenv(X, Y, 2, B)}
 \dontrun{bootse}
 }

@@ -44,8 +44,8 @@ X <- fiberpaper[ , c(5, 7)]
 Y <- fiberpaper[ , 1:3]
 Z <- as.numeric(fiberpaper[ , 6] > mean(fiberpaper[ , 6]))
 
-m <- 5
-nperm <- 50
+\dontrun{m <- 5}
+\dontrun{nperm <- 50}
 \dontrun{cvPE <- cv.genv(X, Y, Z, 2, m, nperm)}
 \dontrun{cvPE}
 

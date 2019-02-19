@@ -42,7 +42,7 @@ X <- fiberpaper[ , c(5, 7)]
 Y <- fiberpaper[ , 1:3]
 Z <- as.numeric(fiberpaper[ , 6] > mean(fiberpaper[ , 6]))
 
-B <- 100
+\dontrun{B <- 100}
 \dontrun{res <- boot.genv(X, Y, Z, 2, B)}
 \dontrun{res$bootse[[1]]}
 \dontrun{res$bootse[[2]]}

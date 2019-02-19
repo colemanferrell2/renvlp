@@ -5,7 +5,8 @@
  Compute the weighted partial envelope estimator with weights computed from BIC. 
 }
 \usage{
-weighted.penv(X1, X2, Y, bstrpNum = 0, min.u = 1, max.u = ncol(Y), boot.resi = "full")
+weighted.penv(X1, X2, Y, bstrpNum = 0, min.u = 1, 
+max.u = ncol(as.matrix(Y)), boot.resi = "full")
 }
 \arguments{
   \item{X1}{Predictors of main interest. An n by p1 matrix, n is the number of observations, and p1 is the number of main predictors. The predictors can be univariate or multivariate, discrete or continuous.}
@@ -15,8 +16,6 @@ weighted.penv(X1, X2, Y, bstrpNum = 0, min.u = 1, max.u = ncol(Y), boot.resi = "
   \item{min.u}{Lower bound of the range of u to compute bootstrap error. A postive integer between 1 and p. This argument is relevant only when \code{bstrpNum}>0.}
   \item{max.u}{Upper bound of the range of u to compute bootstrap error. A postive integer between 1 and p. This argument is relevant only when \code{bstrpNum}>0.}
   \item{boot.resi}{A string that can be "full" or "weighted" indicating the model from which the residuals are calculated.  If the input is "full", then the residuals are obtained using the standard estimators; and if the input is "weighted", then the residuals are obtained using the weighted envelope estimators.  This argument is for computing residuals in residual bootstrap, and it is relevant only when \code{bstrpNum}>0.}
-  
- Note that inputs \code{X} and \code{Y} must be matrices, if not, use \code{as.matrix} to convert them.  
 }
 \details{
  This function computes the weighted partial envelope estimator in a standard multivariate linear regression.  And the weighted partial envelope estimator takes the form \deqn{

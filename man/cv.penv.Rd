@@ -30,7 +30,7 @@ Y <- fiberpaper[, 1:4]
 
 m <- 5
 nperm <- 50
-cvPE <- cv.penv(X1, X2, Y, 1, m, nperm)
-cvPE
+\dontrun{cvPE <- cv.penv(X1, X2, Y, 1, m, nperm)}
+\dontrun{cvPE}
 }
 

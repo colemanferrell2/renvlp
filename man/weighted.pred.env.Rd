@@ -24,7 +24,7 @@ data(fiberpaper)
 X <- fiberpaper[, 5:7]
 Y <- fiberpaper[, 1:4]
 
-pred.res <- weighted.pred.env(X, Y, X[10, ])
+\dontrun{pred.res <- weighted.pred.env(X, Y, X[10, ])}
 
 }
 

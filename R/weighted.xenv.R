@@ -1,4 +1,4 @@
-weighted.xenv <- function(X, Y, bstrpNum = 0, min.u = 1, max.u = ncol(X), boot.resi = "full") {
+weighted.xenv <- function(X, Y, bstrpNum = 0, min.u = 1, max.u = ncol(as.matrix(X)), boot.resi = "full") {
   
   bstrpNum <- ceiling(bstrpNum)
   if (bstrpNum < 0) stop("The number of bootstrap samples should be a positive integer.")

@@ -28,7 +28,7 @@ Y <- fiberpaper[, 1:4]
 u <- u.stenv(X, Y)
 u
 
-B <- 100
-bootse <- boot.stenv(X, Y, 2, 3, B)
-bootse
+\dontrun{B <- 100}
+\dontrun{bootse <- boot.stenv(X, Y, 2, 3, B)}
+\dontrun{bootse}
 }

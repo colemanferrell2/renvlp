@@ -5,7 +5,8 @@
  Compute the weighted envelope estimator with weights computed from BIC. 
 }
 \usage{
-weighted.env(X, Y, bstrpNum = 0, min.u = 1, max.u = ncol(Y), boot.resi = "full")
+weighted.env(X, Y, bstrpNum = 0, min.u = 1, 
+max.u = ncol(as.matrix(Y)), boot.resi = "full")
 }
 \arguments{
   \item{X}{Predictors. An n by p matrix, p is the number of predictors. The predictors can be univariate or multivariate, discrete or continuous.}
@@ -14,8 +15,6 @@ weighted.env(X, Y, bstrpNum = 0, min.u = 1, max.u = ncol(Y), boot.resi = "full")
   \item{min.u}{Lower bound of the range of u to compute bootstrap error. A postive integer between 1 and p. This argument is relevant only when \code{bstrpNum}>0.}
   \item{max.u}{Upper bound of the range of u to compute bootstrap error. A postive integer between 1 and p. This argument is relevant only when \code{bstrpNum}>0.}
   \item{boot.resi}{A string that can be "full" or "weighted" indicating the model from which the residuals are calculated.  If the input is "full", then the residuals are obtained using the standard estimators; and if the input is "weighted", then the residuals are obtained using the weighted envelope estimators.  This argument is for computing residuals in residual bootstrap, and it is relevant only when \code{bstrpNum}>0.}
-  
-Note that inputs \code{X} and \code{Y} must be matrices, if not, use \code{as.matrix} to convert them. 
 }
 \details{
  This function computes the weighted envelope estimator in a standard multivariate linear regression.  And the weighted envelope estimator takes the form \deqn{
