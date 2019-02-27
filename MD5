@@ -1,4 +1,4 @@
-806d3f062f52024b54bc88833bf9be24 *DESCRIPTION
+3b5a9b2988d3f6a49bd82ac3e1dd59e7 *DESCRIPTION
 8b54e5a89fbda3af5e077053d40bec76 *NAMESPACE
 ddeb92331caea1f221d6f2b46f1499d7 *R/GE.R
 36161ef9fd51ae2afdccd1aaf3516697 *R/boot.env.R
@@ -47,7 +47,7 @@ b3ad20f9e70cb2d52ec76918515c7c56 *R/pred.senv.R
 4d7aa55f15bc3e90ca46df3ec637ef21 *R/pred.sxenv.R
 02190db3cbcbeb00710e34a18b268edc *R/pred.xenv.R
 6b30e22959bcf33095e83f94c347bdae *R/pred2.env.R
-59aeee0bb5b56224b019547f9bad0bda *R/senv.R
+1833405aa6511441c977bd6dc11f771e *R/senv.R
 1b0f63a6252075f9cd63878838224b9d *R/senvMU.R
 78707ff124c79c095b7a886cc6b06c20 *R/stenv.R
 98fc3ddb5e298aba448ca7244bbda12a *R/stenvMU.R
@@ -87,7 +87,7 @@ d5d77c1204df225cac066e3ef6cb2df9 *data/waterstrider.rda
 9f28cfa56fe37fa4a77d8771a4ebbdf2 *data/wheatprotein.rda
 c19312ce41a9bb4cf5b73ba96e201873 *man/Berkeley.Rd
 9bbf3789ca89ea0a3d677c8537c491b5 *man/GE.Rd
-dcd67ba0f4bea38b0390e19bda193f24 *man/Renvlp.Rd
+b4ce521645178773223b51bc4e11f8ca *man/Renvlp.Rd
 d46e36351fbeb2261b80070650b26d23 *man/boot.env.Rd
 8de8b198049a13d1255c431e6fb9a24e *man/boot.genv.Rd
 175c50d0eef93015d388f9fec430e806 *man/boot.henv.Rd

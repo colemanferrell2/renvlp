@@ -122,7 +122,7 @@ senv <- function(X, Y, u, asy = TRUE, init = NULL){
     Sigmahat <- Sigma1 + E2 %*% tcrossprod(Omega0hat, E2)
     tmp.MU <- eigen(sigY)
     objfun <- tmp$objfun + sum(log(tmp.MU$values))
-    loglik <- -n * r/2 * log(2 * pi + 1) - n/2 * objfun
+    loglik <- -n * r/2 * (log(2 * pi) + 1) - n/2 * objfun
     if (asy == T) {
       covMatrix <- kronecker(invsigX, M)
       asyFm <- matrix(sqrt(diag(covMatrix)), nrow = r)
