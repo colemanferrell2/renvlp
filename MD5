@@ -1,4 +1,4 @@
-3b5a9b2988d3f6a49bd82ac3e1dd59e7 *DESCRIPTION
+c4ced8b62e1b25e2cee11ba299e4f77b *DESCRIPTION
 8b54e5a89fbda3af5e077053d40bec76 *NAMESPACE
 ddeb92331caea1f221d6f2b46f1499d7 *R/GE.R
 36161ef9fd51ae2afdccd1aaf3516697 *R/boot.env.R
@@ -24,7 +24,7 @@ d08a6fbeea28112a3fa9996be63f7559 *R/cv.sxenv.R
 cee6d878823dea3d411c862e7d1cf473 *R/cv.xenv.R
 3365d1fc615170b16d667094eae9361f *R/d.stenv.R
 8faaab610c8aa82efb2fac69c29de044 *R/env.R
-27a5c8fc3f60c83cd506232b6041af60 *R/envMU.R
+9fbbf5411f67422322e641eb7749bb0a *R/envMU.R
 2228de10a8c750c61d677059ec64e492 *R/expan.R
 4669b2f78b35d242a196b54518f16f74 *R/genv.R
 b41d2af7ba42a3b60373138460697e4e *R/genvMU.R
@@ -32,10 +32,10 @@ b41d2af7ba42a3b60373138460697e4e *R/genvMU.R
 00cb115b55cb156d93883351bb260be8 *R/henv.R
 5005f9e41813a4f687c82b083a5808f9 *R/henvMU.R
 7b8161949347c0b7af119195557a1a7e *R/logit.env.R
-724129fc717278674bd62a42defe7c99 *R/logit.envMU.R
+b05df459a9d1e52439cfc557e69b7ebd *R/logit.envMU.R
 bad84c17499f26e0f5a80b9ada106a8d *R/penv.R
 38a131e7877b4f43b8acae91e07ea4f7 *R/pois.env.R
-6378efa60068a88e3e35f7e6e3bc12c4 *R/pois.envMU.R
+ce0262c2bcbb1f72e166659b2a182c96 *R/pois.envMU.R
 e47a653053973ae20a60191871f660f6 *R/pred.env.R
 be0b49923b80e106dce27604ea7b2d76 *R/pred.genv.R
 027ee8061ccdcfd3da10d080770bc2d7 *R/pred.henv.R
@@ -87,7 +87,7 @@ d5d77c1204df225cac066e3ef6cb2df9 *data/waterstrider.rda
 9f28cfa56fe37fa4a77d8771a4ebbdf2 *data/wheatprotein.rda
 c19312ce41a9bb4cf5b73ba96e201873 *man/Berkeley.Rd
 9bbf3789ca89ea0a3d677c8537c491b5 *man/GE.Rd
-b4ce521645178773223b51bc4e11f8ca *man/Renvlp.Rd
+ed24fc72583a9f0ee6f3234a398fc319 *man/Renvlp.Rd
 d46e36351fbeb2261b80070650b26d23 *man/boot.env.Rd
 8de8b198049a13d1255c431e6fb9a24e *man/boot.genv.Rd
 175c50d0eef93015d388f9fec430e806 *man/boot.henv.Rd

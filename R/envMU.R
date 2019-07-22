@@ -131,7 +131,7 @@ envMU <- function(M, U, u) {
       Gammahat <- as.matrix(Gammahat)
       Gamma0hat <- as.matrix(Gamma0hat)
 	  
-	} else if (u == r - 1) {
+	} else if (u == r - 1 & u != 1) {
 	
 	  maxiter = 100
 	  ftol = 1e-3

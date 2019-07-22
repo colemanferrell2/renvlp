@@ -131,7 +131,7 @@ pois.envMU <- function(X, Y, u){
         T5 <- crossprod(X, Cn) %*% t(eta) 
         tmp5 <- X1 %*% t(x) + X2 %*% g1
         T6 <- tcrossprod(sigwxv, Cn) %*% tmp5 %*% invC3
-        tmp6 <- sigwx[ , -j] %*% g1 + tcrossprod(sigwx[ , j], x)
+        tmp6 <- as.matrix(sigwx[ , -j]) %*% g1 + tcrossprod(sigwx[ , j], x)
         T7 <- tmp6 %*% invC3 %*% crossprod(tmp5, Cn) %*% t(eta)
         T8 <- tmp6 %*% eta %*% crossprod(Cn, tmp5) %*% invC3
         r1 <- rep(0, p)
@@ -294,7 +294,7 @@ pois.envMU <- function(X, Y, u){
             T5 <- crossprod(X, Cn) %*% t(eta) 
             tmp5 <- X1 %*% t(x) + X2 %*% g1
             T6 <- tcrossprod(sigwxv, Cn) %*% tmp5 %*% invC3
-            tmp6 <- sigwx[ , -j] %*% g1 + tcrossprod(sigwx[ , j], x)
+            tmp6 <- as.matrix(sigwx[ , -j]) %*% g1 + tcrossprod(sigwx[ , j], x)
             T7 <- tmp6 %*% invC3 %*% crossprod(tmp5, Cn) %*% t(eta)
             T8 <- tmp6 %*% eta %*% crossprod(Cn, tmp5) %*% invC3
             r1 <- rep(0, p)
