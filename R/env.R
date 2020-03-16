@@ -10,6 +10,9 @@ env <- function(X, Y, u, asy = TRUE, init = NULL) {
   if (a[1] != nrow(X)) stop("X and Y should have the same number of observations.")
   if (u > r || u < 0) stop("u must be an integer between 0 and r.")
   if(sum(duplicated(cbind(X, Y), MARGIN = 2)) > 0) stop("Some responses also appear in the predictors, or there maybe duplicated columns in X or Y.")
+  if (!is.null(init)) {
+      if (nrow(init) != r || ncol(init) != u) stop("The dimension of init is wrong.")
+  }
   
   sigY <- stats::cov(Y) * (n - 1) / n
   sigYX <- stats::cov(Y, X) * (n - 1) / n
@@ -20,14 +23,8 @@ env <- function(X, Y, u, asy = TRUE, init = NULL) {
   U <- tcrossprod(betaOLS, sigYX) 
   M <- sigY - U
   
-  tmp <- envMU(M, U, u)
+  tmp <- envMU(M, U, u, initial = init)
   
-  if (!is.null(init)) {
-      if (nrow(init) != r || ncol(init) != u) stop("The initial value should have r rows and u columns.")
-      tmp0 <- qr.Q(qr(init), complete = TRUE)
-      tmp$Gammahat <- as.matrix(tmp0[, 1:u])
-      tmp$Gamma0hat <- as.matrix(tmp0[, (u+1):r])
-  }
   
   Gammahat <- tmp$Gammahat
   Gamma0hat <- tmp$Gamma0hat

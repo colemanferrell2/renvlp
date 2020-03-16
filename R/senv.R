@@ -11,7 +11,9 @@ senv <- function(X, Y, u, asy = TRUE, init = NULL){
     stop("u must be an integer between 0 and r.")
   if (sum(duplicated(cbind(X, Y), MARGIN = 2)) > 0) 
     stop("Some responses also appear in the predictors, or there maybe duplicated columns in X or Y.")
-  
+  if (!is.null(init)) {
+    if (nrow(init) != r || ncol(init) != u) stop("The dimension of init is wrong.")
+  }
   
   sigY <- stats::cov(Y) * (n - 1)/n
   sigYX <- stats::cov(Y, X) * (n - 1)/n
@@ -59,50 +61,8 @@ senv <- function(X, Y, u, asy = TRUE, init = NULL){
     }
   }
   else {
-    tmp <- senvMU(X, Y, u)
+    tmp <- senvMU(X, Y, u, initial = init)
     
-    if (!is.null(init)) {
-        if (nrow(init) != r || ncol(init) != u) stop("The initial value should have r rows and u columns.")
-        tmp0 <- qr.Q(qr(init), complete = TRUE)
-        tmp$Gammahat <- as.matrix(tmp0[, 1:u])
-        tmp$Gamma0hat <- as.matrix(tmp0[, (u+1):r])
-        objfun <- function(d, Gamma, X, Y){
-            X <- as.matrix(X)
-            Y <- as.matrix(Y)
-            a <- dim(Y)
-            n <- a[1]
-            r <- a[2]
-            p <- ncol(X)
-            sigY <- stats::cov(Y) * (n - 1)/n
-            sigYX <- stats::cov(Y, X) * (n - 1)/n
-            sigX <- stats::cov(X) * (n - 1)/n
-            invsigX <- chol2inv(chol(sigX))
-            invsigY <- chol2inv(chol(sigY))
-            betaOLS <- sigYX %*% invsigX
-            U <- tcrossprod(betaOLS, sigYX)
-            M <- sigY - U
-            d1 <- c(1, d)
-            Lambda <- diag(d1)
-            invLambda <- diag(1 / d1)
-            m1 <- crossprod(Gamma, Lambda)
-            eigtem1 <- eigen(m1 %*% tcrossprod(invsigY, m1))
-            m2 <- crossprod(Gamma, invLambda)
-            eigtem2 <- eigen(m2 %*% tcrossprod(M, m2))
-            temp1 <- sum(log(eigtem1$values))
-            temp2 <- sum(log(eigtem2$values))
-            objfun <- temp1 + temp2
-            return(objfun)
-        }
-        d.init <- rep(1, (r - 1))
-        k2 <- rep(0, (r - 1))
-        
-        tmp.init <- Rsolnp::solnp(pars = d.init, fun = objfun, LB = k2,
-        control = list(delta = 1e-10, tol = 1e-8, trace = 0),
-        Gamma = tmp$Gammahat, X = X, Y = Y)
-        d <- tmp.init$pars
-        d1 <- c(1, d)
-        tmp$Lambda <- diag(d1)
-    }
     
     Gammahat <- tmp$Gammahat
     Gamma0hat <- tmp$Gamma0hat

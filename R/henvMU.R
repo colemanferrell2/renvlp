@@ -1,16 +1,30 @@
-henvMU <- function(M, U, MU, u, n, ng, L){
+henvMU <- function(M, U, MU, u, n, ng, L, initial = NULL){
   
   p <- L 
   dimM <- dim(M[[1]])
   dimU <- dim(U[[1]])
   r <- dimM[1]
   
-  auxinit <- function(M, U, MU, u, ng, n, p){
+  if (!is.null(initial)) {
+      if (nrow(initial) != r || ncol(initial) != u) stop("The initial value should have r rows and u columns.")
+  }
+  
+  auxinit <- function(M, U, MU, u, ng, n, p, initial = NULL){
     
     tmp.MU <- eigen(MU)
     invMU <- sweep(tmp.MU$vectors, MARGIN = 2, 1 / tmp.MU$values, '*') %*% t(tmp.MU$vectors)
     invMU2 <- sweep(tmp.MU$vectors, MARGIN = 2, 1 / sqrt(tmp.MU$values), '*') %*% t(tmp.MU$vectors)
     
+    if (!is.null(initial)) {
+        init <- initial
+        obj1a <- c()
+        for(i in 1:p){
+            eig1 <- eigen(t(init) %*% M[[i]] %*% init)
+            eig2 <- eigen(t(init) %*% invMU %*% init)
+            obj1a[i] <- sum(log(eig1$values))*ng[i]/n + sum(log(eig2$values))
+        }
+        obj1 <- sum(obj1a)
+    } else {
     midmatrix <- invMU2
     startv4 <- function(a) t(a) %*% midmatrix %*% a
     
@@ -25,6 +39,7 @@ henvMU <- function(M, U, MU, u, n, ng, L){
       obj1a[i] <- sum(log(eig1$values))*ng[i]/n + sum(log(eig2$values))
     }
     obj1 <- sum(obj1a)
+    }
     
     return(list(init = init, obj1 = obj1, invMU = invMU))
     

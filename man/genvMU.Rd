@@ -5,7 +5,7 @@
  Estimate the groupwise envelope subspace with specified dimension. 
 }
 \usage{
-genvMU(M, U, MU, u, n, ng, L)
+genvMU(M, U, MU, u, n, ng, L, initial = NULL)
 }
 
 \arguments{
@@ -33,6 +33,9 @@ genvMU(M, U, MU, u, n, ng, L)
   }
   \item{L}{
   The number of groups.  
+  }
+  \item{initial}{
+  The user-specified value of Gamma for the envelope subspace.
   }
 }
 

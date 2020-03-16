@@ -14,6 +14,10 @@ henv <- function(X, Y, u, asy = TRUE, fit = TRUE, init = NULL) {
     stop("u should be an interger between 0 and r")
   }
   
+  if (!is.null(init)) {
+      if (nrow(init) != r || ncol(init) != u) stop("The dimension of init is wrong.")
+  }
+  
   ncumx <- c()
   for (i in 1 : p) {
     ncumx[i] <- length(which(XX == as.numeric(levels(XX)[i])))
@@ -53,14 +57,8 @@ henv <- function(X, Y, u, asy = TRUE, fit = TRUE, init = NULL) {
     U[[i]] <- sigY - M[[i]]
   }
   MU <- sigY
-  tmp <- henvMU(M, U, MU, u, n, ng, p)
+  tmp <- henvMU(M, U, MU, u, n, ng, p, initial = init)
   
-  if (!is.null(init)) {
-      if (nrow(init) != r || ncol(init) != u) stop("The initial value should have r rows and u columns.")
-      tmp0 <- qr.Q(qr(init), complete = TRUE)
-      tmp$Gammahat <- as.matrix(tmp0[, 1:u])
-      tmp$Gamma0hat <- as.matrix(tmp0[, (u+1):r])
-  }
   
   Gammahat <- tmp$Gammahat
   Gamma0hat <- tmp$Gamma0hat

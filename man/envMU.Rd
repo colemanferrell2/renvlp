@@ -5,12 +5,13 @@
  Estimate the envelope subspace with specified dimension. 
 }
 \usage{
-envMU(M, U, u)
+envMU(M, U, u, initial = NULL)
 }
 \arguments{
   \item{M}{M matrix in the envelope objective function. An r by r semi-positive definite matrix.}
   \item{U}{U matrix in the envelope objective function. An r by r semi-positive definite matrix.}
   \item{u}{Dimension of the envelope. An integer between 0 and r.}
+  \item{initial}{The user-specified value of Gamma for the envelope subspace.}
 }
 \details{
  This function estimate the envelope subspace using an non-Grassmann optimization algorithm.  The starting value and optimization algorithm is described in Cook et al. (2016).

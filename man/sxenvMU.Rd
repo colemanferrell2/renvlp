@@ -5,13 +5,14 @@
  Estimate the scaled envelope subspace in the predictor space with specified dimension. 
 }
 \usage{
-sxenvMU(X, Y, u, R)
+sxenvMU(X, Y, u, R, initial = NULL)
 }
 \arguments{
   \item{X}{Predictors. An n by p matrix, p is the number of predictors. The predictors can be univariate or multivariate, discrete or continuous.}
   \item{Y}{Multivariate responses. An n by r matrix, r is the number of responses and n is number of observations. The responses must be continuous variables.}
   \item{u}{Dimension of the scaled envelope in the predictor space. An integer between 0 and p.}
   \item{R}{The number of replications of the scales. A vector, the sum of all elements of R must be p.}
+  \item{initial}{The user-specified value of Gamma for the envelope subspace.}
 }
 \details{
  This function estimate the scaled envelope subspace in the predictor space using an non-Grassmann optimization algorithm and nonlinear optimization using augmented Lagrange method.

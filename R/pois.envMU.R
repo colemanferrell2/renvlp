@@ -1,4 +1,4 @@
-pois.envMU <- function(X, Y, u){
+pois.envMU <- function(X, Y, u, initial = NULL){
   X <- as.matrix(X)
   Y <- as.matrix(Y)
   a <- dim(Y)
@@ -34,9 +34,10 @@ pois.envMU <- function(X, Y, u){
 
   M.init <- inv.sigwx / (- c.theta.mean)
   U.init <- tcrossprod(beta)
-  tmp1 <- envMU(M.init, U.init, u)
+  tmp1 <- envMU(M.init, U.init, u, initial = initial)
   gamma.init <- tmp1$Gammahat
   gamma0.init <- tmp1$Gamma0hat
+
 
   sigX <- stats::cov(X) * (n - 1) / n
   invsigX <- chol2inv(chol(sigX))

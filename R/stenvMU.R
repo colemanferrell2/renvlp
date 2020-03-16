@@ -1,4 +1,4 @@
-stenvMU <- function(X, Y, q, u){
+stenvMU <- function(X, Y, q, u, initial1 = NULL, initial2 = NULL){
   X <- as.matrix(X)
   Y <- as.matrix(Y)
   a <- dim(Y)
@@ -21,7 +21,7 @@ stenvMU <- function(X, Y, q, u){
   betaOLS <- sigYX %*% invsigX
   U1 <- crossprod(sigYX, invsigY) %*% sigYX
   M1 <- sigX - U1
-  tmp1 <- envMU(M1, U1, q)
+  tmp1 <- envMU(M1, U1, q, initial = initial1)
   Phi <- tmp1$Gammahat
   Phi0 <- tmp1$Gamma0hat
   E1 <- crossprod(Phi, sigX) %*% Phi
@@ -29,7 +29,7 @@ stenvMU <- function(X, Y, q, u){
   E2 <- sigYX %*% Phi
   U2 <- E2 %*% tcrossprod(invE1, E2)
   M2 <- sigY - U2
-  tmp2 <- envMU(M2, U2, u)
+  tmp2 <- envMU(M2, U2, u, initial = initial2)
   Ga <- tmp2$Gammahat
   Ga0 <- tmp2$Gamma0hat
   m1 <- crossprod(Phi, sigX) %*% Phi

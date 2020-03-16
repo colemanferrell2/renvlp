@@ -1,4 +1,4 @@
-envMU <- function(M, U, u) {
+envMU <- function(M, U, u, initial = NULL) {
 
   dimM <- dim(M)
   dimU <- dim(U)
@@ -30,65 +30,69 @@ envMU <- function(M, U, u) {
 	  maxiter = 100
 	  ftol = 1e-3
 	  
+      if (!is.null(initial)) {
+          init <- initial
+          eig1 <- eigen(t(init) %*% M %*% init)
+          eig2 <- eigen(t(init) %*% invMU %*% init)
+          obj1 <- sum(log(eig1$values)) + sum(log(eig2$values))
+      } else {
+          MU <- M + U
+          tmp.MU <- eigen(MU)
+          invMU <- sweep(tmp.MU$vectors, MARGIN = 2, 1 / tmp.MU$values, '*') %*% t(tmp.MU$vectors)
+          invMU2 <- sweep(tmp.MU$vectors, MARGIN = 2, 1 / sqrt(tmp.MU$values), '*') %*% t(tmp.MU$vectors)
 	  
-	  MU <- M + U
-	  tmp.MU <- eigen(MU)
-	  invMU <- sweep(tmp.MU$vectors, MARGIN = 2, 1 / tmp.MU$values, '*') %*% t(tmp.MU$vectors)
-	  invMU2 <- sweep(tmp.MU$vectors, MARGIN = 2, 1 / sqrt(tmp.MU$values), '*') %*% t(tmp.MU$vectors)
-	  
-	  midmatrix <- U
-	  startv <- function(a) t(a) %*% midmatrix %*% a
-	  tmp2.MU <- apply(tmp.MU$vectors, 2, startv)
-	  tmp3.MU <- sort(tmp2.MU, decreasing = TRUE, index.return = TRUE)
-	  init <- as.matrix(tmp.MU$vectors[, tmp3.MU$ix[1]]) 
+          midmatrix <- U
+          startv <- function(a) t(a) %*% midmatrix %*% a
+          tmp2.MU <- apply(tmp.MU$vectors, 2, startv)
+          tmp3.MU <- sort(tmp2.MU, decreasing = TRUE, index.return = TRUE)
+          init <- as.matrix(tmp.MU$vectors[, tmp3.MU$ix[1]])
 	  
 	  #		if (qr(MU)$rank == r) {
-	  eig1 <- eigen(t(init) %*% M %*% init)
-	  eig2 <- eigen(t(init) %*% invMU %*% init)
-	  obj1 <- sum(log(eig1$values)) + sum(log(eig2$values))
+          eig1 <- eigen(t(init) %*% M %*% init)
+          eig2 <- eigen(t(init) %*% invMU %*% init)
+          obj1 <- sum(log(eig1$values)) + sum(log(eig2$values))
 	  
-	  midmatrix <- invMU2 %*% tcrossprod(U, invMU2) 
-	  tmp2.MU <- apply(tmp.MU$vectors, 2, startv)
-	  tmp3.MU <- sort(tmp2.MU, decreasing = TRUE, index.return = TRUE)
-	  init.MU <- as.matrix(tmp.MU$vectors[, tmp3.MU$ix[1]])
-	  e1 <- eigen(t(init.MU) %*% M %*% init.MU)
-	  e2 <- eigen(t(init.MU) %*% invMU %*% init.MU)
-	  obj2 <- sum(log(e1$values)) + sum(log(e2$values))		
-	  if (obj2 < obj1) {
-	    init <- init.MU
-	    obj1 <- obj2
-	  }
+          midmatrix <- invMU2 %*% tcrossprod(U, invMU2)
+          tmp2.MU <- apply(tmp.MU$vectors, 2, startv)
+          tmp3.MU <- sort(tmp2.MU, decreasing = TRUE, index.return = TRUE)
+          init.MU <- as.matrix(tmp.MU$vectors[, tmp3.MU$ix[1]])
+          e1 <- eigen(t(init.MU) %*% M %*% init.MU)
+          e2 <- eigen(t(init.MU) %*% invMU %*% init.MU)
+          obj2 <- sum(log(e1$values)) + sum(log(e2$values))
+          if (obj2 < obj1) {
+              init <- init.MU
+              obj1 <- obj2
+          }
 	  
 	  #			if (qr(M)$rank == r) {
-	  tmp.M <- eigen(M)
-	  midmatrix <- U
-	  tmp2.M <- apply(tmp.M$vectors, 2, startv)
-	  tmp3.M <- sort(tmp2.M, decreasing = TRUE, index.return = TRUE)	
-	  init.M <- as.matrix(tmp.M$vectors[, tmp3.M$ix[1]])
-	  e1 <- eigen(t(init.M) %*% M %*% init.M)
-	  e2 <- eigen(t(init.M) %*% invMU %*% init.M)
-	  obj3 <- sum(log(e1$values)) + sum(log(e2$values))			
-	  if (obj3 < obj1) {
-	    init <- init.M
-	    obj1 <- obj3
-	  }
+          tmp.M <- eigen(M)
+          midmatrix <- U
+          tmp2.M <- apply(tmp.M$vectors, 2, startv)
+          tmp3.M <- sort(tmp2.M, decreasing = TRUE, index.return = TRUE)
+          init.M <- as.matrix(tmp.M$vectors[, tmp3.M$ix[1]])
+          e1 <- eigen(t(init.M) %*% M %*% init.M)
+          e2 <- eigen(t(init.M) %*% invMU %*% init.M)
+          obj3 <- sum(log(e1$values)) + sum(log(e2$values))
+          if (obj3 < obj1) {
+              init <- init.M
+              obj1 <- obj3
+          }
 	  
-	  invM2 <- sweep(tmp.M$vectors, MARGIN = 2, 1 / sqrt(tmp.M$values), '*') %*% t(tmp.M$vectors)
-	  midmatrix <- invM2 %*% tcrossprod(U, invM2) 
-	  tmp2.M <- apply(tmp.M$vectors, 2, startv)
-	  tmp3.M <- sort(tmp2.M, decreasing = TRUE, index.return = TRUE)
-	  init.M <- as.matrix(tmp.M$vectors[, tmp3.M$ix[1]])				
+          invM2 <- sweep(tmp.M$vectors, MARGIN = 2, 1 / sqrt(tmp.M$values), '*') %*% t(tmp.M$vectors)
+          midmatrix <- invM2 %*% tcrossprod(U, invM2)
+          tmp2.M <- apply(tmp.M$vectors, 2, startv)
+          tmp3.M <- sort(tmp2.M, decreasing = TRUE, index.return = TRUE)
+          init.M <- as.matrix(tmp.M$vectors[, tmp3.M$ix[1]])
 	  
-	  e1 <- eigen(t(init.M) %*% M %*% init.M)
-	  e2 <- eigen(t(init.M) %*% invMU %*% init.M)			
-	  obj4 <- sum(log(e1$values)) + sum(log(e2$values))			
-	  if (obj4 < obj1) {
-	    init <- init.M
-	    obj1 <- obj4
-	  }
-	  #			}
-	  #		}
-	  
+          e1 <- eigen(t(init.M) %*% M %*% init.M)
+          e2 <- eigen(t(init.M) %*% invMU %*% init.M)
+          obj4 <- sum(log(e1$values)) + sum(log(e2$values))
+          if (obj4 < obj1) {
+            init <- init.M
+            obj1 <- obj4
+          }
+      }
+      
 	  GEidx <- GE(init)
 	  Ginit <- init %*% solve(init[GEidx[1], ])
 	  
@@ -128,14 +132,20 @@ envMU <- function(M, U, u) {
 	  }
 	  Gamma0hat <- qr.Q(a, complete = TRUE)[, (u+1):r]
 	  objfun <- obj5 + sum(log(tmp.MU$values))
-      Gammahat <- as.matrix(Gammahat)
-      Gamma0hat <- as.matrix(Gamma0hat)
+    Gammahat <- as.matrix(Gammahat)
+    Gamma0hat <- as.matrix(Gamma0hat)
 	  
 	} else if (u == r - 1 & u != 1) {
 	
 	  maxiter = 100
 	  ftol = 1e-3
-	  
+      
+      if (!is.null(initial)) {
+          init <- initial
+          eig1 <- eigen(t(init) %*% M %*% init)
+          eig2 <- eigen(t(init) %*% invMU %*% init)
+          obj1 <- sum(log(eig1$values)) + sum(log(eig2$values))
+      } else {
 	  MU <- M + U
 	  tmp.MU <- eigen(MU)
 	  invMU <- sweep(tmp.MU$vectors, MARGIN = 2, 1 / tmp.MU$values, '*') %*% t(tmp.MU$vectors)
@@ -191,6 +201,7 @@ envMU <- function(M, U, u) {
 	        init <- init.M
 	        obj1 <- obj4
 	      }
+      }
 #	    }
 #	  }
 	  
@@ -256,8 +267,13 @@ envMU <- function(M, U, u) {
 
 		maxiter = 100
 		ftol = 1e-3
-		
-
+        
+        if (!is.null(initial)) {
+            init <- initial
+            eig1 <- eigen(t(init) %*% M %*% init)
+            eig2 <- eigen(t(init) %*% invMU %*% init)
+            obj1 <- sum(log(eig1$values)) + sum(log(eig2$values))
+        } else {
 		MU <- M + U
 		tmp.MU <- eigen(MU)
 		invMU <- sweep(tmp.MU$vectors, MARGIN = 2, 1 / tmp.MU$values, '*') %*% t(tmp.MU$vectors)
@@ -313,6 +329,7 @@ envMU <- function(M, U, u) {
 					init <- init.M
 					obj1 <- obj4
 				}
+        }
 #			}
 #		}
 		
@@ -389,8 +406,8 @@ envMU <- function(M, U, u) {
 
 		Gamma0hat <- qr.Q(a, complete = TRUE)[, (u+1):r]
 		objfun <- obj5 + sum(log(tmp.MU$values))
-        Gammahat <- as.matrix(Gammahat)
-        Gamma0hat <- as.matrix(Gamma0hat)
+    Gammahat <- as.matrix(Gammahat)
+    Gamma0hat <- as.matrix(Gamma0hat)
 		
 	}
 	return(list(Gammahat = Gammahat, Gamma0hat = Gamma0hat, objfun = objfun))

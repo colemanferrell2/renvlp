@@ -52,8 +52,8 @@ X7 <- horseshoecrab[ , 5]
 X <- cbind(X1, X2, X3, X4, X5, X6, X7)
 Y <- horseshoecrab[ , 4]
 
-u <- u.pois.env(X, Y)
-u
+\dontrun{u <- u.pois.env(X, Y)}
+\dontrun{u}
 
 m <- pois.env(X, Y, 1)
 m$beta

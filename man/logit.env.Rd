@@ -52,10 +52,10 @@ X7 <- horseshoecrab[ , 5]
 X <- cbind(X1, X2, X3, X4, X5, X6, X7)
 Y <- as.numeric(ifelse(horseshoecrab[ , 4] > 0, 1, 0))
 
-u <- u.logit.env(X, Y)
-u
+\dontrun{u <- u.logit.env(X, Y)}
+\dontrun{u}
 
-m <- logit.env(X, Y, 1)
-m$beta
+\dontrun{m <- logit.env(X, Y, 1)}
+\dontrun{m$beta}
 }
 

@@ -11,7 +11,9 @@ sxenv <- function(X, Y, u, R, asy = TRUE, init = NULL){
     stop("u must be an integer between 0 and p.")
   if (sum(duplicated(cbind(X, Y), MARGIN = 2)) > 0) 
     stop("Some responses also appear in the predictors, or there maybe duplicated columns in X or Y.")
-  
+  if (!is.null(init)) {
+    if (nrow(init) != p || ncol(init) != u) stop("The dimension of init is wrong.")
+  }
   
   sigY <- stats::cov(Y) * (n - 1)/n
   sigYX <- stats::cov(Y, X) * (n - 1)/n
@@ -67,124 +69,7 @@ sxenv <- function(X, Y, u, R, asy = TRUE, init = NULL){
       ratio <- matrix(1, p, r)
     }
   } else {
-    tmp1 <- sxenvMU(X, Y, u, R)
-    
-    if (!is.null(init)) {
-        if (nrow(init) != p || ncol(init) != u) stop("The initial value should have p rows and u columns.")
-        tmp0 <- qr.Q(qr(init), complete = TRUE)
-        tmp1$Gammahat <- as.matrix(tmp0[, 1:u])
-        tmp1$Gamma0hat <- as.matrix(tmp0[, (u+1):p])
-        if (length(R) == p) {
-            objfun <- function(d, Gamma, X, Y){
-                X <- as.matrix(X)
-                Y <- as.matrix(Y)
-                a <- dim(Y)
-                n <- a[1]
-                r <- a[2]
-                p <- ncol(X)
-                sigY <- stats::cov(Y) * (n - 1)/n
-                sigYX <- stats::cov(Y, X) * (n - 1)/n
-                sigX <- stats::cov(X) * (n - 1)/n
-                invsigX <- chol2inv(chol(sigX))
-                invsigY <- chol2inv(chol(sigY))
-                t1 <- crossprod(sigYX, invsigY)
-                U <- t1 %*% sigYX
-                M <- sigX - U
-                d1 <- c(1, d)
-                Lambda <- diag(d1)
-                invLambda <- diag(1 / d1)
-                m1 <- crossprod(Gamma, Lambda)
-                eigtem1 <- eigen(m1 %*% tcrossprod(invsigX, m1))
-                m2 <- crossprod(Gamma, invLambda)
-                eigtem2 <- eigen(m2 %*% tcrossprod(M, m2))
-                temp1 <- sum(log(eigtem1$values))
-                temp2 <- sum(log(eigtem2$values))
-                objfun <- temp1 + temp2
-                return(objfun)
-            }
-            
-            d.init <- rep(1, (p - 1))
-            
-            k2 <- rep(0, (p - 1))
-            tmp.init <- Rsolnp::solnp(pars = d.init, fun = objfun, LB = k2,
-            control = list(delta = 1e-10, tol = 1e-8, trace = 0),
-            Gamma = tmp1$Gammahat, X = X, Y = Y)
-            d <- tmp.init$pars
-            d1 <- c(1, d)
-            tmp1$Lambdahat <- diag(d1)
-        } else {
-            objfun1 <- function(d, Gamma, X, Y, R){
-                X <- as.matrix(X)
-                Y <- as.matrix(Y)
-                a <- dim(Y)
-                n <- a[1]
-                r <- a[2]
-                p <- ncol(X)
-                sigY <- stats::cov(Y) * (n - 1)/n
-                sigYX <- stats::cov(Y, X) * (n - 1)/n
-                sigX <- stats::cov(X) * (n - 1)/n
-                invsigX <- chol2inv(chol(sigX))
-                invsigY <- chol2inv(chol(sigY))
-                t1 <- crossprod(sigYX, invsigY)
-                U <- t1 %*% sigYX
-                M <- sigX - U
-                Lambda <- diag(d)
-                invLambda <- diag(1 / d)
-                m1 <- crossprod(Gamma, Lambda)
-                eigtem1 <- eigen(m1 %*% tcrossprod(invsigX, m1))
-                m2 <- crossprod(Gamma, invLambda)
-                eigtem2 <- eigen(m2 %*% tcrossprod(M, m2))
-                temp1 <- sum(log(eigtem1$values))
-                temp2 <- sum(log(eigtem2$values))
-                objfun <- temp1 + temp2
-                return(objfun)
-            }
-            
-            heq <- function (d, Gamma, X, Y, R){
-                iter = sum(R)
-                i <- 1
-                cont <- NULL
-                while (i < iter) {
-                    C <- matrix(0, (R[i] - 1), sum(R))
-                    for (j in 2 : (sum(R) - 1)){
-                        if (R[i] == j) {
-                            for (k in 1 : (j - 1)){
-                                s <- sum(R[0 : (i - 1)]) + 1
-                                C[k , s] <- 1
-                                C[k , (s + k)] <- -1
-                            }
-                        }
-                    }
-                    cont <- rbind(cont, C)
-                    if (i == length(R)) {
-                        c1 <- c(1, rep(0, (sum(R) - 1)))
-                        cont <- rbind(c1, cont)
-                        break
-                    } else {
-                        i <- i + 1
-                    }
-                }
-                
-                g <- rep(NA, nrow(cont))
-                g[1] <- d[1]
-                for (m in 2 : nrow(cont)){
-                    g[m] <- d[which(cont[m, ] == 1)] - d[which(cont[m, ] == -1)]  
-                }
-                g
-            }
-            d.init <- rep(1, p) 
-            g1 <- heq(d.init, tmp1$Gammahat, X, Y, R)
-            k1 <- c(1, rep(0, length(g1) - 1))
-            k2 <- rep(0, p)
-            
-            tmp.init <- Rsolnp::solnp(pars = d.init, fun = objfun1, eqfun = heq, eqB = k1,
-            LB = k2, 
-            control = list(delta = 1e-10, tol = 1e-8, trace = 0),
-            R = R, Gamma = tmp1$Gammahat, X = X, Y = Y)
-            d <- tmp.init$pars
-            tmp1$Lambdahat <- diag(d)
-        }
-    }
+    tmp1 <- sxenvMU(X, Y, u, R, initial = init)
     
     Gammahat <- tmp1$Gammahat
     Gamma0hat <- tmp1$Gamma0hat

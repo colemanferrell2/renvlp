@@ -5,13 +5,15 @@
  Estimate the simulatneous envelope subspace with specified dimension. 
 }
 \usage{
-stenvMU(X, Y, q, u)
+stenvMU(X, Y, q, u, initial1 = NULL, initial2 = NULL)
 }
 \arguments{
   \item{X}{Predictors. An n by p matrix, p is the number of predictors. The predictors can be univariate or multivariate, discrete or continuous.}
   \item{Y}{Multivariate responses. An n by r matrix, r is the number of responses and n is number of observations. The responses must be continuous variables.}
   \item{q}{Dimension of the X-envelope. An integer between 0 and p.}
   \item{u}{Dimension of the Y-envelope. An integer between 0 and r.}
+  \item{initial1}{The user-specified value of Phi for the X-envelope subspace. An p by q matrix.}
+  \item{initial2}{The user-specified value of Gamma for the Y-envelope subspace. An r by u matrix.}
 }
 \details{
  This function estimate the simultaneous envelope subspace using an non-Grassmann optimization algorithm. 

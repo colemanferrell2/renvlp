@@ -5,7 +5,7 @@
  Estimate the heteroscedastic envelope subspace with specified dimension. 
 }
 \usage{
-henvMU(M, U, MU, u, n, ng, L)
+henvMU(M, U, MU, u, n, ng, L, initial = NULL)
 }
 
 \arguments{
@@ -33,6 +33,9 @@ henvMU(M, U, MU, u, n, ng, L)
   }
   \item{L}{
   The number of groups.  
+  }
+  \item{initial}{
+  The user-specified value of Gamma for the envelope subspace.
   }
 }
 

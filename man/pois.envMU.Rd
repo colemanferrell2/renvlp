@@ -5,12 +5,13 @@
  Estimate the envelope subspace with specified dimension in poisson regression. 
 }
 \usage{
-pois.envMU(X, Y, u)
+pois.envMU(X, Y, u, initial = NULL)
 }
 \arguments{
   \item{X}{Predictors. An n by p matrix, p is the number of predictors. The predictors can be univariate or multivariate, discrete or continuous.}
   \item{Y}{Response. An n by 1 matrix. The univariate response must be counts.}
   \item{u}{Dimension of the envelope. An integer between 0 and p.}
+  \item{initial}{The user-specified value of Gamma for the envelope subspace.}
 }
 \details{
  This function estimate the envelope subspace in poisson regression using an non-Grassmann optimization algorithm.  The starting value and optimization algorithm is described in Cook et al. (2016).

@@ -1,4 +1,4 @@
-logit.envMU <- function(X, Y, u){
+logit.envMU <- function(X, Y, u, initial = NULL){
   X <- as.matrix(X)
   Y <- as.matrix(Y)
   a <- dim(Y)
@@ -35,7 +35,7 @@ logit.envMU <- function(X, Y, u){
   
   M.init <- inv.sigwx / (- c.theta.mean)
   U.init <- tcrossprod(beta)
-  tmp1 <- envMU(M.init, U.init, u)
+  tmp1 <- envMU(M.init, U.init, u, initial = initial)
   gamma.init <- tmp1$Gammahat
   gamma0.init <- tmp1$Gamma0hat
   
@@ -74,6 +74,7 @@ logit.envMU <- function(X, Y, u){
     tmp.MU <- eigen(MU)
     invMU <- sweep(tmp.MU$vectors, MARGIN = 2, 
                    1/tmp.MU$values, "*") %*% t(tmp.MU$vectors)
+                   
     
     c1 <- log(1 + exp(theta))
     temp1 <- t(Y) %*% theta - colSums(c1)
@@ -230,6 +231,7 @@ logit.envMU <- function(X, Y, u){
     tmp.MU <- eigen(MU)
     invMU <- sweep(tmp.MU$vectors, MARGIN = 2, 
                    1/tmp.MU$values, "*") %*% t(tmp.MU$vectors)
+    
     
     c1 <- log(1 + exp(theta))
     temp1 <- t(Y) %*% theta - colSums(c1)

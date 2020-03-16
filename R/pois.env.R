@@ -11,51 +11,17 @@ pois.env <- function(X, Y, u, asy = TRUE, init = NULL) {
     stop("u must be an integer between 0 and p.")
   if (sum(duplicated(cbind(X, Y), MARGIN = 2)) > 0) 
     stop("Some responses also appear in the predictors, or there maybe duplicated columns in X or Y.")
+    
+  if (!is.null(init)) {
+    if (nrow(init) != p || ncol(init) != u) stop("The dimension of init is wrong.")
+  }
   
   sigY <- stats::cov(Y) * (n - 1)/n
   sigYX <- stats::cov(Y, X) * (n - 1)/n
   sigX <- stats::cov(X) * (n - 1)/n
   invsigY <- chol2inv(chol(sigY))
-  tmp <- pois.envMU(X, Y, u)
+  tmp <- pois.envMU(X, Y, u, initial = init)
   
-  if (!is.null(init)) {
-      if (nrow(init) != p || ncol(init) != u) stop("The initial value should have p rows and u columns.")
-      tmp0 <- qr.Q(qr(init), complete = TRUE)
-      tmp$Gammahat <- tmp0[, 1:u]
-      tmp$Gamma0hat <- tmp0[, (u+1):p]
-      GX <- X %*% tmp$Gammahat
-      fit <- stats::glm(Y ~ GX, family = stats::poisson)
-      tmp$muhat <- as.vector(fit$coefficients[1])
-      tmp$etahat <- matrix(fit$coefficients[2 : (u + 1)])
-      beta <- tmp$Gammahat %*% tmp$etahat
-      theta <- matrix(1, n, 1) %*% tmp$muhat + X %*% beta
-      c.theta <- - exp(theta)
-      c.theta.mean <- mean(c.theta)
-      tmp$weighthat <- c.theta / c.theta.mean
-      tmp$Vhat <- theta + ((Y - c.theta) / tmp$weighthat)
-      W <- diag(as.vector(tmp$weighthat))
-      wx <- W %*% X
-      mean.wx <- apply(wx, 2, mean)
-      wxx <- X - matrix(1, nrow = n) %*% mean.wx
-      sigwx <- crossprod(wxx, W) %*% wxx / n
-      wv <- W %*% tmp$Vhat
-      mean.wv <- mean(wv)
-      wvv <- tmp$Vhat - matrix(1, nrow = n) %*% mean.wv
-      sigwxv <- crossprod(wxx, W) %*% wvv / n
-      inv.sigwx <- chol2inv(chol(sigwx))
-      tmp$avar <- inv.sigwx / (- c.theta.mean)
-      M <- sigX
-      MU <- sigX
-      tmp.MU <- eigen(MU)
-      invMU <- sweep(tmp.MU$vectors, MARGIN = 2,
-      1/tmp.MU$values, "*") %*% t(tmp.MU$vectors)
-      e1 <- eigen(t(tmp$Gammahat) %*% M %*% tmp$Gammahat)
-      e2 <- eigen(t(tmp$Gammahat) %*% invMU %*% tmp$Gammahat)
-      e3 <- eigen(M)
-      e4 <- matrix(1, n, 1) %*% tmp$muhat + X %*% tmp$Gammahat %*% tmp$etahat
-      e5 <- crossprod(Y, e4) - colSums(exp(e4))
-      tmp$objfun <- - n/2 * (sum(log(e1$values)) + sum(log(e2$values)) + sum(log(e3$values))) + e5
-  }
   
   Gammahat <- tmp$Gammahat
   Gamma0hat <- tmp$Gamma0hat

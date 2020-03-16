@@ -1,4 +1,4 @@
-senvMU <- function(X, Y, u){
+senvMU <- function(X, Y, u, initial = NULL){
   X <- as.matrix(X)
   Y <- as.matrix(Y)
   a <- dim(Y)
@@ -47,7 +47,7 @@ senvMU <- function(X, Y, u){
   betaOLS <- sigYX %*% invsigX
   U <- tcrossprod(betaOLS, sigYX)
   M <- sigY - U
-  tmp <- envMU(M, U, u)
+  tmp <- envMU(M, U, u, initial = initial)
   Gamma <- tmp$Gammahat
   
   d.init <- rep(1, (r - 1))

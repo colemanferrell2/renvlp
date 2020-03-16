@@ -13,7 +13,9 @@ penv <- function(X1, X2, Y, u, asy = TRUE, init = NULL) {
   if (a[1] != nrow(X2)) stop("X2 and Y should have the same number of observations.")
   if (u > r || u < 0) stop("u must be an integer between 0 and r.")
   if(sum(duplicated(cbind(X1, X2, Y), MARGIN = 2)) > 0) stop("Some responses also appear in the predictors, or there maybe duplicated columns in X or Y.")
-  
+  if (!is.null(init)) {
+      if (nrow(init) != r || ncol(init) != u) stop("The dimension of init is wrong.")
+  }
 
   Yc <- scale(Y, center = T, scale = F)
   X1c <- scale(X1, center = T, scale = F)
@@ -28,14 +30,8 @@ penv <- function(X1, X2, Y, u, asy = TRUE, init = NULL) {
   res.yc2 <- Yc - X2c %*% invsigX2 %*% sigX2Y
 
 
-  tmp <- env(res.1c2, res.yc2, u)
+  tmp <- env(res.1c2, res.yc2, u, init = init)
   
-  if (!is.null(init)) {
-      if (nrow(init) != r || ncol(init) != u) stop("The initial value should have r rows and u columns.")
-      tmp0 <- qr.Q(qr(init), complete = TRUE)
-      tmp$Gamma <- as.matrix(tmp0[, 1:u])
-      tmp$Gamma0 <- as.matrix(tmp0[, (u+1):r])
-  }
   
   Gammahat <- tmp$Gamma
   Gamma0hat <- tmp$Gamma0

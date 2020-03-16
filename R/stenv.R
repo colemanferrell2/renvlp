@@ -13,6 +13,12 @@ stenv <- function (X, Y, q, u, asy = TRUE, Pinit = NULL, Ginit = NULL) {
     stop("q must be an integer between 0 and p.")
   if (sum(duplicated(cbind(X, Y), MARGIN = 2)) > 0) 
     stop("Some responses also appear in the predictors, or there maybe duplicated columns in X or Y.")
+  if (!is.null(Pinit)) {
+    if (nrow(Pinit) != r || ncol(Pinit) != u) stop("The dimension of Pinit is wrong.")
+  }
+  if (!is.null(Ginit)) {
+      if (nrow(Ginit) != p || ncol(Ginit) != q) stop("The dimension of Ginit is wrong.")
+  }
   
   sigY <- stats::cov(Y) * (n - 1)/n
   sigYX <- stats::cov(Y, X) * (n - 1)/n
@@ -70,7 +76,7 @@ stenv <- function (X, Y, q, u, asy = TRUE, Pinit = NULL, Ginit = NULL) {
   }
   else if (u == r) {
     M1 <- sigY - tcrossprod(betaOLS, sigYX)
-    tmp.xenv <- xenv(X, Y, q, asy = TRUE)
+    tmp.xenv <- xenv(X, Y, q, asy = TRUE, init = Ginit)
     Gammahat <- diag(r)
     Gamma0hat <- NULL
     Phihat <- tmp.xenv$Gamma
@@ -108,7 +114,7 @@ stenv <- function (X, Y, q, u, asy = TRUE, Pinit = NULL, Ginit = NULL) {
     }
   }
   else if (q == p) {
-    tmp.env <- env(X, Y, u, asy = TRUE)
+    tmp.env <- env(X, Y, u, asy = TRUE, init = Pinit)
     Gammahat <- tmp.env$Gamma
     Gamma0hat <- tmp.env$Gamma0
     Phihat <- diag(p)
@@ -157,21 +163,8 @@ stenv <- function (X, Y, q, u, asy = TRUE, Pinit = NULL, Ginit = NULL) {
   }
   else{
 
-    tmp.stenv <- stenvMU(X, Y, q, u)
+    tmp.stenv <- stenvMU(X, Y, q, u, initial1 = Pinit, initial2 = Ginit)
 
-    if (!is.null(Ginit)) {
-        if (nrow(Ginit) != r || ncol(Ginit) != u) stop("The initial value should have r rows and u columns.")
-        tmp0 <- qr.Q(qr(Ginit), complete = TRUE)
-        tmp.stenv$Gammahat <- as.matrix(tmp0[, 1:u])
-        tmp.stenv$Gamma0hat <- as.matrix(tmp0[, (u+1):r])
-    }
-    
-    if (!is.null(Pinit)) {
-        if (nrow(Pinit) != p || ncol(Pinit) != q) stop("The initial value should have p rows and q columns.")
-        tmp0 <- qr.Q(qr(Pinit), complete = TRUE)
-        tmp.stenv$Phihat <- as.matrix(tmp0[, 1:q])
-        tmp.stenv$Phi0hat <- as.matrix(tmp0[, (q+1):p])
-    }
     
     Gammahat <- tmp.stenv$Gammahat
     Gamma0hat <- tmp.stenv$Gamma0hat

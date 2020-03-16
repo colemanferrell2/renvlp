@@ -1,4 +1,4 @@
-sxenvMU <- function(X, Y, u, R){
+sxenvMU <- function(X, Y, u, R, initial = NULL){
   X <- as.matrix(X)
   Y <- as.matrix(Y)
   a <- dim(Y)
@@ -19,7 +19,7 @@ sxenvMU <- function(X, Y, u, R){
   t1 <- crossprod(sigYX, invsigY)
   U <- t1 %*% sigYX
   M <- sigX - U
-  tmp <- envMU(M, U, u)
+  tmp <- envMU(M, U, u, initial = initial)
   Gamma <- tmp$Gammahat
   if (length(R) == p) {
     objfun <- function(d, Gamma, X, Y){
