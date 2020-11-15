@@ -2,7 +2,7 @@
 \alias{boot.env}
 \title{Bootstrap for env}
 \description{
- Compute bootstrap standard error for the envelope estimator.
+ Compute bootstrap standard error for the response envelope estimator.
 }
 \usage{
 boot.env(X, Y, u, B)

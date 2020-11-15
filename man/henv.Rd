@@ -2,7 +2,7 @@
 \alias{henv}
 \title{Fit the heteroscedastic envelope model}
 \description{
- Fit the heteroscedastic envelope model with dimension u. 
+ Fit the heteroscedastic envelope model derived to incorporate heteroscedastic error structure in the context of estimating multivariate means for different groups with dimension u. 
 }
 \usage{
 henv(X, Y, u, asy = TRUE, fit = TRUE, init = NULL)

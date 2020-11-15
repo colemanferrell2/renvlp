@@ -2,7 +2,7 @@
 \alias{u.env}
 \title{Select the dimension of env}
 \description{
- This function outputs dimensions selected by Akaike information criterion (AIC), Bayesian information criterion (BIC) and likelihood ratio testing with specified significance level for the envelope model.
+ This function outputs dimensions selected by Akaike information criterion (AIC), Bayesian information criterion (BIC) and likelihood ratio testing with specified significance level for the response envelope model.
 }
 \usage{
 u.env(X, Y, alpha = 0.01)

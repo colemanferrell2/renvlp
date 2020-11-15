@@ -2,7 +2,7 @@
 \alias{cv.env}
 \title{Cross validation for env}
 \description{
- Compute the prediction error for the envelope estimator using m-fold cross validation.
+ Compute the prediction error for the response envelope estimator using m-fold cross validation.
 }
 \usage{
 cv.env(X, Y, u, m, nperm)

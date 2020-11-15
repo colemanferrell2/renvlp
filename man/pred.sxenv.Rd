@@ -2,7 +2,7 @@
 \alias{pred.sxenv}
 \title{Estimation or prediction for sxenv}
 \description{
- Perform estimation or prediction under the scaled envelope model in the predictor space.
+ Perform estimation or prediction under the scaled predictor envelope model.
 }
 \usage{
 pred.sxenv(m, Xnew)

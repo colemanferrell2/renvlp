@@ -1,8 +1,8 @@
 \name{testcoef.env}
 \alias{testcoef.env}
-\title{Hypothesis test of the coefficients of the envelope model}
+\title{Hypothesis test of the coefficients of the response envelope model}
 \description{
-This function tests the null hypothesis L * beta * R = A versus the alternative hypothesis L * beta * R ~= A, where beta is estimated under the envelope model.
+This function tests the null hypothesis L * beta * R = A versus the alternative hypothesis L * beta * R ~= A, where beta is estimated under the response envelope model.
 }
 \usage{
 testcoef.env(m, L, R, A)

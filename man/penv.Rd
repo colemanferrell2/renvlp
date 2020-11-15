@@ -2,7 +2,7 @@
 \alias{penv}
 \title{Fit the partial envelope model}
 \description{
- Fit the partial envelope model in multivariate linear regression with dimension u. 
+ Fit the partial envelope model in multivariate linear regression with dimension u. The partial envelope model focuses on the coefficients of main interest. 
 }
 \usage{
 penv(X1, X2, Y, u, asy = TRUE, init = NULL) 

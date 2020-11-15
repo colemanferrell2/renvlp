@@ -2,7 +2,7 @@
 \alias{u.xenv}
 \title{Select the dimension of xenv}
 \description{
-This function outputs dimensions selected by Akaike information criterion (AIC), Bayesian information criterion (BIC) and likelihood ratio testing with specified significance level for the envelope model.
+This function outputs dimensions selected by Akaike information criterion (AIC), Bayesian information criterion (BIC) and likelihood ratio testing with specified significance level for the predictor envelope model.
 }
 \usage{
 u.xenv(X, Y, alpha = 0.01)

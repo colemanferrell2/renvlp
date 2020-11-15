@@ -2,7 +2,7 @@
 \alias{cv.senv}
 \title{Cross validation for senv}
 \description{
- Compute the prediction error for the scaled envelope estimator using m-fold cross validation.
+ Compute the prediction error for the scaled response envelope estimator using m-fold cross validation.
 }
 \usage{
 cv.senv(X, Y, u, m, nperm)

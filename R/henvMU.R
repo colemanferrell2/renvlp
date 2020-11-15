@@ -1,30 +1,19 @@
-henvMU <- function(M, U, MU, u, n, ng, L, initial = NULL){
-  
-  p <- L 
+henvMU <- function(M, U, MU, u, n, ng, p, initial = NULL){
+   
   dimM <- dim(M[[1]])
   dimU <- dim(U[[1]])
   r <- dimM[1]
+  
+  tmp.MU <- eigen(MU)
+  invMU <- sweep(tmp.MU$vectors, MARGIN = 2, 1 / tmp.MU$values, '*') %*% t(tmp.MU$vectors)
   
   if (!is.null(initial)) {
       if (nrow(initial) != r || ncol(initial) != u) stop("The initial value should have r rows and u columns.")
   }
   
-  auxinit <- function(M, U, MU, u, ng, n, p, initial = NULL){
-    
-    tmp.MU <- eigen(MU)
-    invMU <- sweep(tmp.MU$vectors, MARGIN = 2, 1 / tmp.MU$values, '*') %*% t(tmp.MU$vectors)
+  auxinit <- function(M, U, MU, u, ng, n, p){
     invMU2 <- sweep(tmp.MU$vectors, MARGIN = 2, 1 / sqrt(tmp.MU$values), '*') %*% t(tmp.MU$vectors)
     
-    if (!is.null(initial)) {
-        init <- initial
-        obj1a <- c()
-        for(i in 1:p){
-            eig1 <- eigen(t(init) %*% M[[i]] %*% init)
-            eig2 <- eigen(t(init) %*% invMU %*% init)
-            obj1a[i] <- sum(log(eig1$values))*ng[i]/n + sum(log(eig2$values))
-        }
-        obj1 <- sum(obj1a)
-    } else {
     midmatrix <- invMU2
     startv4 <- function(a) t(a) %*% midmatrix %*% a
     
@@ -39,7 +28,6 @@ henvMU <- function(M, U, MU, u, n, ng, L, initial = NULL){
       obj1a[i] <- sum(log(eig1$values))*ng[i]/n + sum(log(eig2$values))
     }
     obj1 <- sum(obj1a)
-    }
     
     return(list(init = init, obj1 = obj1, invMU = invMU))
     
@@ -47,10 +35,6 @@ henvMU <- function(M, U, MU, u, n, ng, L, initial = NULL){
   
   auxf1 <- function(M1, U1, u, n, ng, p, init, x, r){
     M <- M1
-    U <- U1
-    MU <- M + U
-    tmp.MU <- eigen(MU)
-    invMU <- sweep(tmp.MU$vectors, MARGIN = 2, 1 / tmp.MU$values, '*') %*% t(tmp.MU$vectors)
     
     GEidx <- GE(init)
     Ginit <- init %*% solve(init[GEidx[1:u], ])		
@@ -73,37 +57,25 @@ henvMU <- function(M, U, MU, u, n, ng, L, initial = NULL){
     tmp3 <- x + t3
     T2 <- invc1 %*% tmp2	
     T3 <- invc2 %*% tmp3
-    out <- ng * log(1 + M[j, j] * crossprod(tmp2, T2))/n + log(1 + invMU[j, j]
-                                                               * crossprod(tmp3, T3))/p
+    out <- ng * log(1 + M[j, j] * crossprod(tmp2, T2))/n + log(1 + invMU[j, j] * crossprod(tmp3, T3))/p
     return(out)
   }
   
   auxf2 <- function(M1, U1, t2, t3, invc1, invc2, ng, n, p, x, j){
     M <- M1
-    U <- U1
-    MU <- M + U
-    tmp.MU <- eigen(MU)
-    invMU <- sweep(tmp.MU$vectors, MARGIN = 2, 
-                   1 / tmp.MU$values, '*') %*% t(tmp.MU$vectors)
     
     tmp2 <- x + t2
     tmp3 <- x + t3
     
     T2 <- invc1 %*% tmp2	
     T3 <- invc2 %*% tmp3
-    out <- ng * log(1 + M[j, j] * crossprod(tmp2, T2))/n + log(1 + invMU[j, j] 
-                                                               * crossprod(tmp3, T3))/p
+    out <- ng * log(1 + M[j, j] * crossprod(tmp2, T2))/n + log(1 + invMU[j, j] * crossprod(tmp3, T3))/p
     return(out)
     
   }
   
   auxg1 <- function(M1, U1, u, n, ng, p, init, x, r){
     M <- M1
-    U <- U1
-    MU <- M + U
-    tmp.MU <- eigen(MU)
-    invMU <- sweep(tmp.MU$vectors, MARGIN = 2, 
-                   1 / tmp.MU$values, '*') %*% t(tmp.MU$vectors)
     
     GEidx <- GE(init)
     Ginit <- init %*% solve(init[GEidx[1 : u], ])		
@@ -126,28 +98,20 @@ henvMU <- function(M, U, MU, u, n, ng, L, initial = NULL){
     tmp3 <- x + t3
     T2 <- invC1 %*% tmp2	
     T3 <- invC2 %*% tmp3
-    out <-  2 * ng * T2 / (n *
-                             as.numeric(1 / M[j, j] + crossprod(tmp2, T2))) + 2 * T3 /(p * 
-                                                                                         as.numeric(1 / invMU[j, j] + crossprod(tmp3, T3)))
+    out <-  2 * ng * T2 / (n * as.numeric(1 / M[j, j] + crossprod(tmp2, T2))) + 2 * T3 /(p * as.numeric(1 / invMU[j, j] + crossprod(tmp3, T3)))
     return(out)
   }
   
   auxg2 <- function(M1, U1, t2, t3, invc1, invc2, ng, n, p, x, j){
     M <- M1
-    U <- U1
-    MU <- M + U
-    tmp.MU <- eigen(MU)
-    invMU <- sweep(tmp.MU$vectors, MARGIN = 2, 
-                   1 / tmp.MU$values, '*') %*% t(tmp.MU$vectors)
+
     
     tmp2 <- x + t2
     tmp3 <- x + t3
     
     T2 <- invc1 %*% tmp2	
     T3 <- invc2 %*% tmp3
-    out <-  2 * T2 * ng / (n * 
-                             as.numeric(1 / M[j, j] + crossprod(tmp2, T2))) + 2 * T3 / (p * 
-                                                                                          as.numeric(1 / invMU[j, j] + crossprod(tmp3, T3)))	
+    out <-  2 * T2 * ng / (n *  as.numeric(1 / M[j, j] + crossprod(tmp2, T2))) + 2 * T3 / (p * as.numeric(1 / invMU[j, j] + crossprod(tmp3, T3)))
     return(out)
     
   }
@@ -228,10 +192,6 @@ henvMU <- function(M, U, MU, u, n, ng, L, initial = NULL){
     
     GUG = GVG <- list(length = p)
     for (k in 1 : p){
-      MU <- M[[k]] + U[[k]]
-      tmp.MU <- eigen(MU)
-      invMU <- sweep(tmp.MU$vectors, MARGIN = 2, 
-                     1 / tmp.MU$values, '*') %*% t(tmp.MU$vectors)
       GUG[[k]] <- crossprod(Ginit, (M[[k]] %*% Ginit))	
       GVG[[k]] <- crossprod(Ginit, (invMU %*% Ginit))	
     }
@@ -247,10 +207,7 @@ henvMU <- function(M, U, MU, u, n, ng, L, initial = NULL){
         t2 = t3 = GUGt2 = GVGt2 = invc1 = invc2 <- list(length=p)
         for(k in 1:p){
           Maux <- M[[k]]
-          MU <- M[[k]] + U[[k]]
-          tmp.MU <- eigen(MU)
-          invMU <- sweep(tmp.MU$vectors, MARGIN = 2, 
-                         1 / tmp.MU$values, '*') %*% t(tmp.MU$vectors)
+
           t2[[k]] <- crossprod(Ginit[-j, ], as.matrix(Maux[-j, j])) / Maux[j, j]
           t3[[k]] <- crossprod(Ginit[-j, ], as.matrix(invMU[-j, j])) / invMU[j, j]
           
@@ -288,10 +245,6 @@ henvMU <- function(M, U, MU, u, n, ng, L, initial = NULL){
         
         for(k in 1:p){
           Maux <- M[[k]]
-          MU <- M[[k]] + U[[k]]
-          tmp.MU <- eigen(MU)
-          invMU <- sweep(tmp.MU$vectors, MARGIN = 2, 
-                         1 / tmp.MU$values, '*') %*% t(tmp.MU$vectors)
           GUGt2[[k]] <- g + t2[[k]]
           GUG[[k]] <- GUG[[k]] + tcrossprod(GUGt2[[k]], GUGt2[[k]]) * Maux[j, j]
           

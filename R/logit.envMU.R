@@ -17,7 +17,7 @@ logit.envMU <- function(X, Y, u, initial = NULL){
   mu <- as.vector(fit$coefficients[1])
   beta <- as.vector(fit$coefficients[2 : (p + 1)])
   theta <- matrix(1, n, 1) %*% mu + X %*% beta
-  c.theta <- - exp(theta) / (1 + exp(theta))^2
+  c.theta <- - 1 / (2 + exp(-theta) + exp(theta))
   c.theta.mean <- mean(c.theta)
   weight <- c.theta / c.theta.mean
   mu1 <- exp(theta) / (1 + exp(theta))
@@ -66,14 +66,13 @@ logit.envMU <- function(X, Y, u, initial = NULL){
     Cn1 <- t(Y) %*% theta - colSums(c1)
     objfun <- Cn1 - n/2 * sum(log(tmp.M$values))
   } else if (u == p - 1) {
-    maxiter = 10000
-    ftol = 0.0001
+    maxiter = 100
+    ftol = 0.001
     
     M <- sigX
     MU <- sigX
     tmp.MU <- eigen(MU)
-    invMU <- sweep(tmp.MU$vectors, MARGIN = 2, 
-                   1/tmp.MU$values, "*") %*% t(tmp.MU$vectors)
+    invMU <- sweep(tmp.MU$vectors, MARGIN = 2, 1/tmp.MU$values, "*") %*% t(tmp.MU$vectors)
                    
     
     c1 <- log(1 + exp(theta))
@@ -119,9 +118,7 @@ logit.envMU <- function(X, Y, u, initial = NULL){
       T2 <- invC1 %*% tmp2
       T3 <- invC2 %*% tmp3 
       T4 <- log(1 + exp(tmp4))
-      n /2 * (- 2 * log(1 + sum(x^2)) + log(1 + M[j, j] * 
-                                              crossprod(tmp2,T2)) + log(1 + invMU[j, j] * 
-                                                                          crossprod(tmp3,T3))) - t(Y) %*% tmp4 + colSums(T4)
+      n /2 * (- 2 * log(1 + sum(x^2)) + log(1 + M[j, j] * crossprod(tmp2,T2)) + log(1 + invMU[j, j] * crossprod(tmp3,T3))) - t(Y) %*% tmp4 + colSums(T4)
     }
     
     gobj <- function(x) {
@@ -131,8 +128,7 @@ logit.envMU <- function(X, Y, u, initial = NULL){
       Cn <- Y - (exp(tmp4) / (1 + exp(tmp4)))
       T2 <- invC1 %*% tmp2
       T3 <- invC2 %*% tmp3 
-      A1 <- crossprod(g1, sigwx[-j, -j]) %*% g1 + as.matrix(x) %*% sigwx[j, -j] %*% g1 + crossprod(g1, 
-                                                                                                   sigwx[-j, j]) %*% t(x) + tcrossprod(x) * sigwx[j , j]
+      A1 <- crossprod(g1, sigwx[-j, -j]) %*% g1 + as.matrix(x) %*% sigwx[j, -j] %*% g1 + crossprod(g1, sigwx[-j, j]) %*% t(x) + tcrossprod(x) * sigwx[j , j]
       invC3 <- chol2inv(chol(A1))
       T5 <- crossprod(X, Cn) %*% t(eta) 
       tmp5 <- X1 %*% t(x) + X2 %*% g1
@@ -143,8 +139,7 @@ logit.envMU <- function(X, Y, u, initial = NULL){
       r1 <- rep(0, p)
       r1[j] <- 1
       T9 <- t(r1) %*% (T5 + T6 - T7 - T8) 
-      - t(T9) + n * (- 4 * x %*% solve(1 + sum(x^2)) + 2 * T2/as.numeric(1/M[j, j] + 
-                                                                           crossprod(tmp2, T2)) + 2 * T3/as.numeric(1/invMU[j, j] + crossprod(tmp3, T3)))
+      - t(T9) + n * (- 4 * x %*% solve(1 + sum(x^2)) + 2 * T2/as.numeric(1/M[j, j] + crossprod(tmp2, T2)) + 2 * T3/as.numeric(1/invMU[j, j] + crossprod(tmp3, T3)))
     }
     
     i <- 1
@@ -158,7 +153,7 @@ logit.envMU <- function(X, Y, u, initial = NULL){
       eta <- as.matrix(fit$coefficients[2 : (u + 1)])
       beta <- Ginit %*% eta
       theta <- matrix(1, n, 1) %*% mu + X %*% beta
-      c.theta <- - exp(theta) / (1 + exp(theta))^2
+      c.theta <- - 1 / (2 + exp(-theta) + exp(theta))
       c.theta.mean <- mean(c.theta)
       weight <- c.theta / c.theta.mean
       mu1 <- exp(theta) / (1 + exp(theta))
@@ -172,7 +167,7 @@ logit.envMU <- function(X, Y, u, initial = NULL){
       mean.wv <- mean(wv)
       wvv <- V - matrix(1, nrow = n) %*% mean.wv
       sigwxv <- crossprod(wxx, W) %*% wvv / n
-      inv.sigwx <- chol2inv(chol(sigwx))
+
       
       e1 <- eigen(t(Ginit) %*% M %*% Ginit)
       e2 <- eigen(t(Ginit) %*% invMU %*% Ginit)
@@ -206,10 +201,6 @@ logit.envMU <- function(X, Y, u, initial = NULL){
     mean.wx <- apply(wx, 2, mean)
     wxx <- X - matrix(1, nrow = n) %*% mean.wx
     sigwx <- crossprod(wxx, W) %*% wxx / n
-    wv <- W %*% V
-    mean.wv <- mean(wv)
-    wvv <- V - matrix(1, nrow = n) %*% mean.wv
-    sigwxv <- crossprod(wxx, W) %*% wvv / n
     inv.sigwx <- chol2inv(chol(sigwx))
     var <- inv.sigwx / (- c.theta.mean)
     e1 <- eigen(t(Gammahat) %*% M %*% Gammahat)
@@ -223,14 +214,13 @@ logit.envMU <- function(X, Y, u, initial = NULL){
     Gamma0hat <- as.matrix(Gamma0hat)
     
   } else {
-    maxiter = 10000
-    ftol = 0.0001
+    maxiter = 100
+    ftol = 0.001
     
     M <- sigX
     MU <- sigX
     tmp.MU <- eigen(MU)
-    invMU <- sweep(tmp.MU$vectors, MARGIN = 2, 
-                   1/tmp.MU$values, "*") %*% t(tmp.MU$vectors)
+    invMU <- sweep(tmp.MU$vectors, MARGIN = 2, 1/tmp.MU$values, "*") %*% t(tmp.MU$vectors)
     
     
     c1 <- log(1 + exp(theta))
@@ -298,8 +288,7 @@ logit.envMU <- function(X, Y, u, initial = NULL){
           T1 <- invt4 %*% x
           T2 <- invC1 %*% tmp2
           T3 <- invC2 %*% tmp3 
-          A1 <- crossprod(g1, sigwx[-j, -j]) %*% g1 + as.matrix(x) %*% sigwx[j, -j] %*% g1 + crossprod(g1, 
-                sigwx[-j, j]) %*% t(x) + tcrossprod(x) * sigwx[j , j]
+          A1 <- crossprod(g1, sigwx[-j, -j]) %*% g1 + as.matrix(x) %*% sigwx[j, -j] %*% g1 + crossprod(g1, sigwx[-j, j]) %*% t(x) + tcrossprod(x) * sigwx[j , j]
           invC3 <- chol2inv(chol(A1))
           T5 <- crossprod(X, Cn) %*% t(eta) 
           tmp5 <- X1 %*% t(x) + X2 %*% g1
@@ -329,7 +318,7 @@ logit.envMU <- function(X, Y, u, initial = NULL){
       eta <- as.matrix(fit$coefficients[2 : (u + 1)])
       beta <- Ginit %*% eta
       theta <- matrix(1, n, 1) %*% mu + X %*% beta
-      c.theta <- - exp(theta) / (1 + exp(theta))^2
+      c.theta <- - 1 / (2 + exp(-theta) + exp(theta))
       c.theta.mean <- mean(c.theta)
       weight <- c.theta / c.theta.mean
       mu1 <- exp(theta) / (1 + exp(theta))
@@ -343,7 +332,7 @@ logit.envMU <- function(X, Y, u, initial = NULL){
       mean.wv <- mean(wv)
       wvv <- V - matrix(1, nrow = n) %*% mean.wv
       sigwxv <- crossprod(wxx, W) %*% wvv / n
-      inv.sigwx <- chol2inv(chol(sigwx))
+
       
       e1 <- eigen(t(Ginit) %*% M %*% Ginit)
       e2 <- eigen(t(Ginit) %*% invMU %*% Ginit)
@@ -367,7 +356,7 @@ logit.envMU <- function(X, Y, u, initial = NULL){
     eta <- matrix(fit$coefficients[2 : (u + 1)])
     beta <- Gammahat %*% eta
     theta <- matrix(1, n, 1) %*% mu + X %*% beta
-    c.theta <- - exp(theta) / (1 + exp(theta))^2
+    c.theta <- - 1 / (2 + exp(-theta) + exp(theta))
     c.theta.mean <- mean(c.theta)
     weight <- c.theta / c.theta.mean
     mu1 <- exp(theta) / (1 + exp(theta))
@@ -377,10 +366,6 @@ logit.envMU <- function(X, Y, u, initial = NULL){
     mean.wx <- apply(wx, 2, mean)
     wxx <- X - matrix(1, nrow = n) %*% mean.wx
     sigwx <- crossprod(wxx, W) %*% wxx / n
-    wv <- W %*% V
-    mean.wv <- mean(wv)
-    wvv <- V - matrix(1, nrow = n) %*% mean.wv
-    sigwxv <- crossprod(wxx, W) %*% wvv / n
     inv.sigwx <- chol2inv(chol(sigwx))
     var <- inv.sigwx / (- c.theta.mean)
     e1 <- eigen(t(Gammahat) %*% M %*% Gammahat)

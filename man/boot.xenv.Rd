@@ -2,7 +2,7 @@
 \alias{boot.xenv}
 \title{Bootstrap for xenv}
 \description{
- Compute bootstrap standard error for the envelope estimator.
+ Compute bootstrap standard error for the predictor envelope estimator.
 }
 \usage{
 boot.xenv(X, Y, u, B)

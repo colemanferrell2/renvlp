@@ -69,8 +69,7 @@ pois.envMU <- function(X, Y, u, initial = NULL){
     M <- sigX
     MU <- sigX
     tmp.MU <- eigen(MU)
-    invMU <- sweep(tmp.MU$vectors, MARGIN = 2, 
-                   1/tmp.MU$values, "*") %*% t(tmp.MU$vectors)
+    invMU <- sweep(tmp.MU$vectors, MARGIN = 2, 1/tmp.MU$values, "*") %*% t(tmp.MU$vectors)
     
     Cn1 <- t(Y) %*% theta - colSums(exp(theta))
     e1 <- eigen(crossprod(gamma.init, M) %*% gamma.init)
@@ -126,8 +125,7 @@ pois.envMU <- function(X, Y, u, initial = NULL){
         Cn <- Y - exp(tmp4)
         T2 <- invC1 %*% tmp2
         T3 <- invC2 %*% tmp3 
-        A1 <- crossprod(g1, sigwx[-j, -j]) %*% g1 + as.matrix(x) %*% sigwx[j, -j] %*% g1 + crossprod(g1, 
-              sigwx[-j, j]) %*% t(x) + tcrossprod(x) * sigwx[j , j]
+        A1 <- crossprod(g1, sigwx[-j, -j]) %*% g1 + as.matrix(x) %*% sigwx[j, -j] %*% g1 + crossprod(g1, sigwx[-j, j]) %*% t(x) + tcrossprod(x) * sigwx[j , j]
         invC3 <- chol2inv(chol(A1))
         T5 <- crossprod(X, Cn) %*% t(eta) 
         tmp5 <- X1 %*% t(x) + X2 %*% g1
@@ -166,7 +164,7 @@ pois.envMU <- function(X, Y, u, initial = NULL){
         mean.wv <- mean(wv)
         wvv <- V - matrix(1, nrow = n) %*% mean.wv
         sigwxv <- crossprod(wxx, W) %*% wvv / n
-        inv.sigwx <- chol2inv(chol(sigwx))
+
       
         e1 <- eigen(t(Ginit) %*% M %*% Ginit)
         e2 <- eigen(t(Ginit) %*% invMU %*% Ginit)
@@ -200,10 +198,6 @@ pois.envMU <- function(X, Y, u, initial = NULL){
       mean.wx <- apply(wx, 2, mean)
       wxx <- X - matrix(1, nrow = n) %*% mean.wx
       sigwx <- crossprod(wxx, W) %*% wxx / n
-      wv <- W %*% V
-      mean.wv <- mean(wv)
-      wvv <- V - matrix(1, nrow = n) %*% mean.wv
-      sigwxv <- crossprod(wxx, W) %*% wvv / n
       inv.sigwx <- chol2inv(chol(sigwx))
       var <- inv.sigwx / (- c.theta.mean)
       e1 <- eigen(t(Gammahat) %*% M %*% Gammahat)
@@ -223,8 +217,7 @@ pois.envMU <- function(X, Y, u, initial = NULL){
       M <- sigX
       MU <- sigX
       tmp.MU <- eigen(MU)
-      invMU <- sweep(tmp.MU$vectors, MARGIN = 2, 
-                     1/tmp.MU$values, "*") %*% t(tmp.MU$vectors)
+      invMU <- sweep(tmp.MU$vectors, MARGIN = 2, 1/tmp.MU$values, "*") %*% t(tmp.MU$vectors)
       
       Cn1 <- t(Y) %*% theta - colSums(exp(theta))
       e1 <- eigen(crossprod(gamma.init, M) %*% gamma.init)
@@ -289,8 +282,7 @@ pois.envMU <- function(X, Y, u, initial = NULL){
             T1 <- invt4 %*% x
             T2 <- invC1 %*% tmp2
             T3 <- invC2 %*% tmp3 
-            A1 <- crossprod(g1, sigwx[-j, -j]) %*% g1 + as.matrix(x) %*% sigwx[j, -j] %*% g1 + crossprod(g1, 
-                  sigwx[-j, j]) %*% t(x) + tcrossprod(x) * sigwx[j , j]
+            A1 <- crossprod(g1, sigwx[-j, -j]) %*% g1 + as.matrix(x) %*% sigwx[j, -j] %*% g1 + crossprod(g1, sigwx[-j, j]) %*% t(x) + tcrossprod(x) * sigwx[j , j]
             invC3 <- chol2inv(chol(A1))
             T5 <- crossprod(X, Cn) %*% t(eta) 
             tmp5 <- X1 %*% t(x) + X2 %*% g1
@@ -333,7 +325,7 @@ pois.envMU <- function(X, Y, u, initial = NULL){
         mean.wv <- mean(wv)
         wvv <- V - matrix(1, nrow = n) %*% mean.wv
         sigwxv <- crossprod(wxx, W) %*% wvv / n
-        inv.sigwx <- chol2inv(chol(sigwx))
+
       
         e1 <- eigen(t(Ginit) %*% M %*% Ginit)
         e2 <- eigen(t(Ginit) %*% invMU %*% Ginit)
@@ -366,10 +358,7 @@ pois.envMU <- function(X, Y, u, initial = NULL){
       mean.wx <- apply(wx, 2, mean)
       wxx <- X - matrix(1, nrow = n) %*% mean.wx
       sigwx <- crossprod(wxx, W) %*% wxx / n
-      wv <- W %*% V
-      mean.wv <- mean(wv)
-      wvv <- V - matrix(1, nrow = n) %*% mean.wv
-      sigwxv <- crossprod(wxx, W) %*% wvv / n
+      
       inv.sigwx <- chol2inv(chol(sigwx))
       var <- inv.sigwx / (- c.theta.mean)
       e1 <- eigen(t(Gammahat) %*% M %*% Gammahat)

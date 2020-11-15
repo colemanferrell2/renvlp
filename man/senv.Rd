@@ -1,8 +1,8 @@
 \name{senv}
 \alias{senv}
-\title{Fit the scaled envelope model}
+\title{Fit the scaled response envelope model}
 \description{
- Fit the scaled envelope model in multivariate linear regression with dimension u. 
+ Fit the scaled response envelope model in multivariate linear regression with dimension u. The scaled response envelope model is a scale-invariant version of the response envelope model.  
 }
 \usage{
 senv(X, Y, u, asy = TRUE, init = NULL)

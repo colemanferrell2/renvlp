@@ -2,7 +2,7 @@
 \alias{genv}
 \title{Fit the groupwise envelope model}
 \description{
- Fit the groupwise envelope model in multivariate linear regression with dimension u. 
+ Fit the groupwise envelope model in multivariate linear regression with dimension u. The groupwise envelope model is designed to accommodate both distinct regression coefficients and distinct error structures for different groups. 
 }
 \usage{
 genv(X, Y, Z, u, asy = TRUE, fit = TRUE, init = NULL)

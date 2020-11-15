@@ -1,8 +1,8 @@
 \name{testcoef.senv}
 \alias{testcoef.senv}
-\title{Hypothesis test of the coefficients of the scaled envelope model}
+\title{Hypothesis test of the coefficients of the scaled response envelope model}
 \description{
-This function tests the null hypothesis L * beta * R = A versus the alternative hypothesis L * beta * R ~= A, where beta is estimated under the scaled envelope model.
+This function tests the null hypothesis L * beta * R = A versus the alternative hypothesis L * beta * R ~= A, where beta is estimated under the scaled response envelope model.
 }
 \usage{
 testcoef.senv(m, L, R, A)

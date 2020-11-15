@@ -1,8 +1,8 @@
 \name{env}
 \alias{env}
-\title{Fit the envelope model}
+\title{Fit the response envelope model}
 \description{
- Fit the envelope model in multivariate linear regression with dimension u. 
+ Fit the response envelope model in multivariate linear regression with dimension u. 
 }
 \usage{
 env(X, Y, u, asy = TRUE, init = NULL)

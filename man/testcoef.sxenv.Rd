@@ -1,8 +1,8 @@
 \name{testcoef.sxenv}
 \alias{testcoef.sxenv}
-\title{Hypothesis test of the coefficients of the scaled envelope model in the predictor space}
+\title{Hypothesis test of the coefficients of the scaled predictor envelope model}
 \description{
-This function tests the null hypothesis L * beta * R = A versus the alternative hypothesis L * beta * R ~= A, where beta is estimated under the scaled envelope model in the predictor space.
+This function tests the null hypothesis L * beta * R = A versus the alternative hypothesis L * beta * R ~= A, where beta is estimated under the scaled predictor envelope model.
 }
 \usage{
 testcoef.sxenv(m, L, R, A)

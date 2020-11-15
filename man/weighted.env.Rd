@@ -1,8 +1,8 @@
 \name{weighted.env}
 \alias{weighted.env}
-\title{Weighted envelope estimator}
+\title{Weighted response envelope estimator}
 \description{
- Compute the weighted envelope estimator with weights computed from BIC. 
+ Compute the weighted response envelope estimator with weights computed from BIC. 
 }
 \usage{
 weighted.env(X, Y, bstrpNum = 0, min.u = 1, 

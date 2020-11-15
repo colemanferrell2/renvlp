@@ -2,7 +2,7 @@
 \alias{pred.xenv}
 \title{Estimation or prediction for xenv}
 \description{
- Perform estimation or prediction under the envelope model in predictor space.
+ Perform estimation or prediction under the predictor envelope model.
 }
 \usage{
 pred.xenv(m, Xnew)

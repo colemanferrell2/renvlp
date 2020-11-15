@@ -2,7 +2,7 @@
 \alias{u.senv}
 \title{Select the dimension of senv}
 \description{
- This function outputs dimensions selected by Akaike information criterion (AIC), Bayesian information criterion (BIC).
+ This function outputs dimensions selected by Akaike information criterion (AIC), Bayesian information criterion (BIC) for the scaled response envelope model.
 }
 \usage{
 u.senv(X, Y)

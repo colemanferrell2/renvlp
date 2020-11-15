@@ -1,8 +1,8 @@
 \name{xenv}
 \alias{xenv}
-\title{Fit the envelope model in the predictor space}
+\title{Fit the predictor envelope model}
 \description{
- Fit the envelope model in the predictor space with dimension u under linear regression. 
+ Fit the predictor envelope model in linear regression with dimension u. 
 }
 \usage{
 xenv(X, Y, u, asy = TRUE, init = NULL)

@@ -1,8 +1,8 @@
 \name{testcoef.xenv}
 \alias{testcoef.xenv}
-\title{Hypothesis test of the coefficients of the envelope model}
+\title{Hypothesis test of the coefficients of the predictor envelope model}
 \description{
-This function tests the null hypothesis L * beta * R = A versus the alternative hypothesis L * beta * R ~= A, where beta is estimated under the envelope model in predictor space.
+This function tests the null hypothesis L * beta * R = A versus the alternative hypothesis L * beta * R ~= A, where beta is estimated under the predictor envelope model.
 }
 \usage{
 testcoef.xenv(m, L, R, A)

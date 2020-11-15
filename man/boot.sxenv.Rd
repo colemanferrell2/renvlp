@@ -2,7 +2,7 @@
 \alias{boot.sxenv}
 \title{Bootstrap for sxenv}
 \description{
- Compute bootstrap standard error for the scaled envelope in the predictor space estimator.
+ Compute bootstrap standard error for the scaled predictor envelope estimator.
 }
 \usage{
 boot.sxenv(X, Y, u, R, B)

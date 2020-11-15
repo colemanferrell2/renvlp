@@ -2,7 +2,7 @@
 \alias{boot.senv}
 \title{Bootstrap for senv}
 \description{
- Compute bootstrap standard error for the scaled envelope estimator.
+ Compute bootstrap standard error for the scaled response envelope estimator.
 }
 \usage{
 boot.senv(X, Y, u, B)

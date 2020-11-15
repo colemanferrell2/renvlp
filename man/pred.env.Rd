@@ -2,7 +2,7 @@
 \alias{pred.env}
 \title{Estimation or prediction for env}
 \description{
- Perform estimation or prediction under the envelope model.
+ Perform estimation or prediction under the response envelope model.
 }
 \usage{
 pred.env(m, Xnew)

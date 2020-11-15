@@ -1,8 +1,8 @@
 \name{sxenv}
 \alias{sxenv}
-\title{Fit the scaled envelope model in the predictor space}
+\title{Fit the scaled predictor envelope model}
 \description{
- Fit the scaled envelope model in the predictor space in multivariate linear regression with dimension u. 
+ Fit the scaled predictor envelope model in multivariate linear regression with dimension u. The scaled predictor envelope model is a scale-invariant version of the predictor envelope model.  
 }
 \usage{
 sxenv(X, Y, u, R, asy = TRUE, init = NULL)

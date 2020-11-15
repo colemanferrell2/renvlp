@@ -2,7 +2,7 @@
 \alias{cv.sxenv}
 \title{Cross validation for sxenv}
 \description{
- Compute the prediction error for the scaled envelope in the predictor space  estimator using m-fold cross validation.
+ Compute the prediction error for the scaled predictor envelope estimator using m-fold cross validation.
 }
 \usage{
 cv.sxenv(X, Y, u, R, m, nperm)

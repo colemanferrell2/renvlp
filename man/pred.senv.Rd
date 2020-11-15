@@ -2,7 +2,7 @@
 \alias{pred.senv}
 \title{Estimation or prediction for senv}
 \description{
- Perform estimation or prediction under the scaled envelope model.
+ Perform estimation or prediction under the scaled response envelope model.
 }
 \usage{
 pred.senv(m, Xnew)

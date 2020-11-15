@@ -2,7 +2,7 @@
 \alias{u.sxenv}
 \title{Select the dimension of sxenv}
 \description{
- This function outputs dimensions selected by Akaike information criterion (AIC), Bayesian information criterion (BIC) for the scaled envelope model in the predictor space. 
+ This function outputs dimensions selected by Akaike information criterion (AIC), Bayesian information criterion (BIC) for the scaled predictor envelope model. 
 }
 \usage{
 u.sxenv(X, Y, R)

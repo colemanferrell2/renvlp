@@ -2,7 +2,7 @@
 \alias{cv.xenv}
 \title{Cross validation for xenv}
 \description{
- Compute the prediction error for the envelope estimator using m-fold cross validation.
+ Compute the prediction error for the predictor envelope estimator using m-fold cross validation.
 }
 \usage{
 cv.xenv(X, Y, u, m, nperm)
