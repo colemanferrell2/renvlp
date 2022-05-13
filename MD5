@@ -1,4 +1,4 @@
-9164352adbf6946c38ccd593c6fea504 *DESCRIPTION
+8ff5cc184ab8450ad3f2663f1c21634b *DESCRIPTION
 62d84187351ca0600952755fdf7aa6cb *NAMESPACE
 ddeb92331caea1f221d6f2b46f1499d7 *R/GE.R
 36161ef9fd51ae2afdccd1aaf3516697 *R/boot.env.R
@@ -24,7 +24,7 @@ d08a6fbeea28112a3fa9996be63f7559 *R/cv.sxenv.R
 cee6d878823dea3d411c862e7d1cf473 *R/cv.xenv.R
 3365d1fc615170b16d667094eae9361f *R/d.stenv.R
 d936a27dbb9f1eabb64af8ca66576835 *R/env.R
-96e5f18606f231ff96591ccf99c6e2dc *R/envMU.R
+f67816780e3f6bb4cdda8b7343fc5375 *R/envMU.R
 2228de10a8c750c61d677059ec64e492 *R/expan.R
 615c12b1f457508b6c91ad67392c340e *R/genv.R
 4837964dcbf0fd19a7d133a07451c904 *R/genvMU.R
@@ -86,7 +86,7 @@ eea14426343202ea3cc740a2dd96b7a5 *data/sales.rda
 d5d77c1204df225cac066e3ef6cb2df9 *data/waterstrider.rda
 9f28cfa56fe37fa4a77d8771a4ebbdf2 *data/wheatprotein.rda
 c19312ce41a9bb4cf5b73ba96e201873 *man/Berkeley.Rd
-e0492725321e47ae960ab9e7b0622fee *man/Renvlp.Rd
+26a3ea099caba4e34c3a417c0e5e113f *man/Renvlp.Rd
 1e64b83197ff8012a9837770fb6d2c4a *man/boot.env.Rd
 8de8b198049a13d1255c431e6fb9a24e *man/boot.genv.Rd
 175c50d0eef93015d388f9fec430e806 *man/boot.henv.Rd
@@ -129,7 +129,7 @@ bf071915ceccceabefc7ff35f7339977 *man/pred.sxenv.Rd
 7eec4ae54df4d044cb0fe479f682c7c4 *man/pred2.env.Rd
 685edf9a205a4f1b05b2c037520f20d8 *man/sales.Rd
 fcbc910158083c818ad94999536bfaa9 *man/senv.Rd
-df6aba3f5beaa48d2620f747680921e6 *man/stenv.Rd
+612603a8122a0a6d52f871118207ad2c *man/stenv.Rd
 532410861bfb1b0721bb040461227b44 *man/sxenv.Rd
 4312da7bbd8fb27f7c738c7888859203 *man/testcoef.env.Rd
 45750386b8b628632e80fb45410f893e *man/testcoef.genv.Rd

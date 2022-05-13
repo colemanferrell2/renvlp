@@ -14,8 +14,8 @@ This package contains functions for estimating envelope models including respons
 \tabular{ll}{
 Package: \tab Renvlp\cr
 Type: \tab Package\cr
-Version: \tab 3.0\cr
-Date: \tab 2021-09-10\cr
+Version: \tab 3.1\cr
+Date: \tab 2021-05-10\cr
 License: \tab GPL-2\cr
 Imports: \tab Rsolnp\cr
 Suggests: \tab Mass, stats\cr
@@ -25,7 +25,7 @@ Suggests: \tab Mass, stats\cr
 \author{
   Minji Lee and Zhihua Su.
   
-  Maintainer: Minji Lee <mlee9@ufl.edu>
+  Maintainer: Minji Lee <minjilee101@gmail.com>
 }
 
 \references{

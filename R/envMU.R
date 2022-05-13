@@ -31,6 +31,9 @@ envMU <- function(M, U, u, initial = NULL) {
 	  ftol = 1e-3
 	  
       if (!is.null(initial)) {
+          MU <- M + U
+          tmp.MU <- eigen(MU)
+          invMU <- sweep(tmp.MU$vectors, MARGIN = 2, 1 / tmp.MU$values, '*') %*% t(tmp.MU$vectors)
           init <- initial
           eig1 <- eigen(t(init) %*% M %*% init)
           eig2 <- eigen(t(init) %*% invMU %*% init)
@@ -141,6 +144,9 @@ envMU <- function(M, U, u, initial = NULL) {
 	  ftol = 1e-3
       
       if (!is.null(initial)) {
+          MU <- M + U
+          tmp.MU <- eigen(MU)
+          invMU <- sweep(tmp.MU$vectors, MARGIN = 2, 1 / tmp.MU$values, '*') %*% t(tmp.MU$vectors)
           init <- initial
           eig1 <- eigen(t(init) %*% M %*% init)
           eig2 <- eigen(t(init) %*% invMU %*% init)
@@ -269,6 +275,9 @@ envMU <- function(M, U, u, initial = NULL) {
 		ftol = 1e-3
         
         if (!is.null(initial)) {
+            MU <- M + U
+            tmp.MU <- eigen(MU)
+            invMU <- sweep(tmp.MU$vectors, MARGIN = 2, 1 / tmp.MU$values, '*') %*% t(tmp.MU$vectors)
             init <- initial
             eig1 <- eigen(t(init) %*% M %*% init)
             eig2 <- eigen(t(init) %*% invMU %*% init)
@@ -277,10 +286,10 @@ envMU <- function(M, U, u, initial = NULL) {
 		MU <- M + U
 		tmp.MU <- eigen(MU)
 		invMU <- sweep(tmp.MU$vectors, MARGIN = 2, 1 / tmp.MU$values, '*') %*% t(tmp.MU$vectors)
-    invMU2 <- sweep(tmp.MU$vectors, MARGIN = 2, 1 / sqrt(tmp.MU$values), '*') %*% t(tmp.MU$vectors)
+        invMU2 <- sweep(tmp.MU$vectors, MARGIN = 2, 1 / sqrt(tmp.MU$values), '*') %*% t(tmp.MU$vectors)
 		
-    midmatrix <- U
-    startv <- function(a) t(a) %*% midmatrix %*% a
+        midmatrix <- U
+        startv <- function(a) t(a) %*% midmatrix %*% a
 		tmp2.MU <- apply(tmp.MU$vectors, 2, startv)
 		tmp3.MU <- sort(tmp2.MU, decreasing = TRUE, index.return = TRUE)
 		init <- as.matrix(tmp.MU$vectors[, tmp3.MU$ix[1:u]]) 

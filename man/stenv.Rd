@@ -19,7 +19,7 @@ stenv(X, Y, q, u, asy = TRUE, Pinit = NULL, Ginit = NULL)
 }
 \details{
  This function fits the envelope model to the responses and predictors simultaneously, \deqn{
- Y = \mu + \Gamma\eta'\Phi' X+\varepsilon, \Sigma_{Y|X}=\Gamma\Omega\Gamma'+\Gamma_{0}\Omega_{0}\Gamma'_{0}, \Sigma_{X}=\Phi\Delta\Phi'+\Phi_{0}\Delta_{0}\Phi'_{0}
+ Y = \mu + \beta'X+\varepsilon, \beta = \Phi\eta\Gamma', \Sigma_{Y|X}=\Gamma\Omega\Gamma'+\Gamma_{0}\Omega_{0}\Gamma'_{0}, \Sigma_{X}=\Phi\Delta\Phi'+\Phi_{0}\Delta_{0}\Phi'_{0}
  }
  using the maximum likelihood estimation.  When the dimension of the Y-envelope is between 1 and r-1 and the dimension of the X-envelope is between 1 and p-1, the starting value and blockwise coordinate descent algorithm in Cook et al. (2016) is implemented.  When the dimension is (p, r), then the envelope model degenerates to the standard multivariate linear regression.  When the dimension of the Y-envelope is r, then the envelope model degenerates to the standard envelope model.  When the dimension of X-envelope is p, then the envelope model degenerates to the envelope model in the predictor space.  When the dimension is 0, it means that X and Y are uncorrelated, and the fitting is different.
 }
