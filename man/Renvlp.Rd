@@ -7,17 +7,17 @@ Computing Envelope Estimators
 }
 
 \description{
-This package contains functions for estimating envelope models including response envelopes, partial response envelopes, envelopes in the predictor space, heteroscedastic envelopes, simultaneous envelopes, scaled response envelopes, scaled envelopes in the predictor space, groupwise envelopes, weighted envelopes, envelopes in logistic regression and envelopes in poisson regression.
+This package contains functions for estimating envelope models including response envelopes, partial response envelopes, envelopes in the predictor space, heteroscedastic envelopes, simultaneous envelopes, scaled response envelopes, scaled envelopes in the predictor space, groupwise envelopes, weighted envelopes, envelopes in logistic regression, envelopes in poisson regression and envelopes in function-on-function linear regression.
 }
 
 \details{
 \tabular{ll}{
 Package: \tab Renvlp\cr
 Type: \tab Package\cr
-Version: \tab 3.1\cr
-Date: \tab 2021-05-10\cr
+Version: \tab 3.2\cr
+Date: \tab 2022-08-07\cr
 License: \tab GPL-2\cr
-Imports: \tab Rsolnp\cr
+Imports: \tab Rsolnp, orthogonalsplinebasis\cr
 Suggests: \tab Mass, stats\cr
 }
 }
@@ -52,6 +52,8 @@ Eck, D. J. and Cook, R. D. (2017). Weighted Envelope Estimation to Handle Variab
 Selection. Biometrika.
 
 Cook, R. D., Zhang, X. (2015). Foundations for Envelope Models and Methods. Journal of the American Statistical Association 110, 599 - 611.
+
+Su, Z., Li, B. and Cook, R. D. (2022+) Envelope model for function-on-function linear regression.
 }
 
 

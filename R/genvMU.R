@@ -109,34 +109,21 @@ genvMU <- function(M, U, MU, u, n, ng, L, initial = NULL){
     
   }
   
-  auxf1 <- function(M1, U1, u, n, ng, p, init, x, r){
+  auxf1 <- function(M1, U1, u, n, ng, p, x, r){
     M <- M1
-    U <- U1
-    MU <- M + U
-    tmp.MU <- eigen(MU)
-    invMU <- sweep(tmp.MU$vectors, MARGIN = 2, 1 / tmp.MU$values, '*') %*% t(tmp.MU$vectors)
     
-    GEidx <- GE(init)
-    Ginit <- init %*% solve(init[GEidx[1:u], ])		
-    
-    j <- GEidx[r]
-    g <- as.matrix(Ginit[j, ])
-    t2 <- crossprod(Ginit[-j, ], as.matrix(M[-j, j])) / M[j, j]
-    t3 <- crossprod(Ginit[-j, ], as.matrix(invMU[-j, j])) / invMU[j, j]
+    t2 <- crossprod(G1init[-j, ], as.matrix(M[-j, j])) / M[j, j]
+
     
     GUGt2 <- g + t2
-    GUG <- crossprod(Ginit, (M %*% Ginit)) - tcrossprod(GUGt2, GUGt2) * M[j, j]
+    GUG <- crossprod(G1init, (M %*% G1init)) - tcrossprod(GUGt2, GUGt2) * M[j, j]
     
-    GVGt2 <- g + t3
-    GVG <- crossprod(Ginit, (invMU %*% Ginit)) - tcrossprod(GVGt2, GVGt2) * invMU[j, j] 
-    
-    invc1 <- chol2inv(chol(GUG))
-    invc2 <- chol2inv(chol(GVG))
+    invC1 <- chol2inv(chol(GUG))
     
     tmp2 <- x + t2
     tmp3 <- x + t3
-    T2 <- invc1 %*% tmp2	
-    T3 <- invc2 %*% tmp3
+    T2 <- invC1 %*% tmp2
+    T3 <- invC2 %*% tmp3
     out <- ng * log(1 + M[j, j] * crossprod(tmp2, T2))/n + log(1 + invMU[j, j]
                   * crossprod(tmp3, T3))/p
     return(out)
@@ -144,11 +131,6 @@ genvMU <- function(M, U, MU, u, n, ng, L, initial = NULL){
   
   auxf2 <- function(M1, U1, t2, t3, invc1, invc2, ng, n, p, x, j){
     M <- M1
-    U <- U1
-    MU <- M + U
-    tmp.MU <- eigen(MU)
-    invMU <- sweep(tmp.MU$vectors, MARGIN = 2, 
-                   1 / tmp.MU$values, '*') %*% t(tmp.MU$vectors)
     
     tmp2 <- x + t2
     tmp3 <- x + t3
@@ -161,30 +143,15 @@ genvMU <- function(M, U, MU, u, n, ng, L, initial = NULL){
     
   }
   
-  auxg1 <- function(M1, U1, u, n, ng, p, init, x, r){
+  auxg1 <- function(M1, U1, u, n, ng, p, x, r){
     M <- M1
-    U <- U1
-    MU <- M + U
-    tmp.MU <- eigen(MU)
-    invMU <- sweep(tmp.MU$vectors, MARGIN = 2, 
-                   1 / tmp.MU$values, '*') %*% t(tmp.MU$vectors)
     
-    GEidx <- GE(init)
-    Ginit <- init %*% solve(init[GEidx[1 : u], ])		
-    
-    j <- GEidx[r]
-    g <- as.matrix(Ginit[j, ])
-    t2 <- crossprod(Ginit[-j, ], as.matrix(M[-j, j])) / M[j, j]
-    t3 <- crossprod(Ginit[-j, ], as.matrix(invMU[-j, j])) / invMU[j, j]
+    t2 <- crossprod(G1init[-j, ], as.matrix(M[-j, j])) / M[j, j]
     
     GUGt2 <- g + t2
-    GUG <- crossprod(Ginit, (M %*% Ginit)) - tcrossprod(GUGt2, GUGt2) * M[j, j]
-    
-    GVGt2 <- g + t3
-    GVG <- crossprod(Ginit, (invMU %*% Ginit)) - tcrossprod(GVGt2, GVGt2) * invMU[j, j] 
+    GUG <- crossprod(G1init, (M %*% G1init)) - tcrossprod(GUGt2, GUGt2) * M[j, j]
     
     invC1 <- chol2inv(chol(GUG))
-    invC2 <- chol2inv(chol(GVG))
     
     tmp2 <- x + t2
     tmp3 <- x + t3
@@ -198,11 +165,7 @@ genvMU <- function(M, U, MU, u, n, ng, L, initial = NULL){
   
   auxg2 <- function(M1, U1, t2, t3, invc1, invc2, ng, n, p, x, j){
     M <- M1
-    U <- U1
-    MU <- M + U
-    tmp.MU <- eigen(MU)
-    invMU <- sweep(tmp.MU$vectors, MARGIN = 2, 
-                   1 / tmp.MU$values, '*') %*% t(tmp.MU$vectors)
+  
     
     tmp2 <- x + t2
     tmp3 <- x + t3
@@ -233,13 +196,21 @@ genvMU <- function(M, U, MU, u, n, ng, L, initial = NULL){
     invMU <- initout$invMU 
     
     GEidx <- GE(init)
-    Ginit <- init %*% solve(init[GEidx[1 : u], ])
+    Ginit = G1init <- init %*% solve(init[GEidx[1 : u], ])
     j <- GEidx[r]
+    
+    g <- as.matrix(Ginit[j, ])
+    t3 <- crossprod(Ginit[-j, ], as.matrix(invMU[-j, j])) / invMU[j, j]
+    
+    GVGt2 <- g + t3
+    GVG <- crossprod(Ginit, (invMU %*% Ginit)) - tcrossprod(GVGt2, GVGt2) * invMU[j, j]
+    
+    invC2 <- chol2inv(chol(GVG))
     
     fobj <- function(x) {
       res <- -2 * log(1 + sum(x^2)) 
       for(i in 1:p){
-        res <- res + auxf1(M[[i]], U[[i]], u, n, ng[i], p, init, x, r)
+        res <- res + auxf1(M[[i]], U[[i]], u, n, ng[i], p, x, r)
       }
       return(res)
     }
@@ -247,7 +218,7 @@ genvMU <- function(M, U, MU, u, n, ng, L, initial = NULL){
     gobj <- function(x) {
       res <- -4 * x %*% solve(1 + sum(x^2))
       for(i in 1:p){
-        res <- res + auxg1(M[[i]], U[[i]], u, n, ng[i], p, init, x, r)
+        res <- res + auxg1(M[[i]], U[[i]], u, n, ng[i], p, x, r)
       }
       return(res)
     }
@@ -283,7 +254,7 @@ genvMU <- function(M, U, MU, u, n, ng, L, initial = NULL){
     maxiter <- 100
     ftol <- 1e-3
     
-    initout <- auxinit(M, U, MU, u, ng, n, p)
+    initout <- auxinit(M, U, MU, u, ng, n, p, initial)
     init <- initout$init
     obj1 <- initout$obj1
     

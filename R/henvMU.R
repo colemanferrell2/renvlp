@@ -11,52 +11,55 @@ henvMU <- function(M, U, MU, u, n, ng, p, initial = NULL){
       if (nrow(initial) != r || ncol(initial) != u) stop("The initial value should have r rows and u columns.")
   }
   
-  auxinit <- function(M, U, MU, u, ng, n, p){
+  auxinit <- function(M, U, MU, u, ng, n, p, initial=NULL){
     invMU2 <- sweep(tmp.MU$vectors, MARGIN = 2, 1 / sqrt(tmp.MU$values), '*') %*% t(tmp.MU$vectors)
-    
-    midmatrix <- invMU2
-    startv4 <- function(a) t(a) %*% midmatrix %*% a
-    
-    tmp2.MU <- apply(tmp.MU$vectors, 2, startv4)
-    tmp3.MU <- sort(tmp2.MU, decreasing = TRUE, index.return = TRUE)
-    init <- as.matrix(tmp.MU$vectors[, tmp3.MU$ix[1:u]]) 
 
-    obj1a <- c()
-    for(i in 1:p){
-      eig1 <- eigen(t(init) %*% M[[i]] %*% init)
-      eig2 <- eigen(t(init) %*% invMU %*% init)
-      obj1a[i] <- sum(log(eig1$values))*ng[i]/n + sum(log(eig2$values))
-    }
-    obj1 <- sum(obj1a)
+    if (!is.null(initial)) {
+        init <- initial
+        obj1a <- c()
+        for(i in 1:p){
+            eig1 <- eigen(t(init) %*% M[[i]] %*% init)
+            eig2 <- eigen(t(init) %*% invMU %*% init)
+            obj1a[i] <- sum(log(eig1$values))*ng[i]/n + sum(log(eig2$values))/p
+        }
+        obj1 <- sum(obj1a)
+    } else {
     
+        midmatrix <- invMU2
+        startv4 <- function(a) t(a) %*% midmatrix %*% a
+    
+        tmp2.MU <- apply(tmp.MU$vectors, 2, startv4)
+        tmp3.MU <- sort(tmp2.MU, decreasing = TRUE, index.return = TRUE)
+        init <- as.matrix(tmp.MU$vectors[, tmp3.MU$ix[1:u]])
+
+        obj1a <- c()
+        for(i in 1:p){
+            eig1 <- eigen(t(init) %*% M[[i]] %*% init)
+            eig2 <- eigen(t(init) %*% invMU %*% init)
+            obj1a[i] <- sum(log(eig1$values))*ng[i]/n + sum(log(eig2$values))/p
+        }
+        obj1 <- sum(obj1a)
+    
+    }
     return(list(init = init, obj1 = obj1, invMU = invMU))
     
   }
   
-  auxf1 <- function(M1, U1, u, n, ng, p, init, x, r){
+  auxf1 <- function(M1, U1, u, n, ng, p, x, r){
     M <- M1
     
-    GEidx <- GE(init)
-    Ginit <- init %*% solve(init[GEidx[1:u], ])		
-    
-    j <- GEidx[r]
-    g <- as.matrix(Ginit[j, ])
-    t2 <- crossprod(Ginit[-j, ], as.matrix(M[-j, j])) / M[j, j]
-    t3 <- crossprod(Ginit[-j, ], as.matrix(invMU[-j, j])) / invMU[j, j]
+    t2 <- crossprod(G1init[-j, ], as.matrix(M[-j, j])) / M[j, j]
     
     GUGt2 <- g + t2
-    GUG <- crossprod(Ginit, (M %*% Ginit)) - tcrossprod(GUGt2, GUGt2) * M[j, j]
+    GUG <- crossprod(G1init, (M %*% G1init)) - tcrossprod(GUGt2, GUGt2) * M[j, j]
     
-    GVGt2 <- g + t3
-    GVG <- crossprod(Ginit, (invMU %*% Ginit)) - tcrossprod(GVGt2, GVGt2) * invMU[j, j] 
-    
-    invc1 <- chol2inv(chol(GUG))
-    invc2 <- chol2inv(chol(GVG))
+    invC1 <- chol2inv(chol(GUG))
+
     
     tmp2 <- x + t2
     tmp3 <- x + t3
-    T2 <- invc1 %*% tmp2	
-    T3 <- invc2 %*% tmp3
+    T2 <- invC1 %*% tmp2
+    T3 <- invC2 %*% tmp3
     out <- ng * log(1 + M[j, j] * crossprod(tmp2, T2))/n + log(1 + invMU[j, j] * crossprod(tmp3, T3))/p
     return(out)
   }
@@ -74,25 +77,15 @@ henvMU <- function(M, U, MU, u, n, ng, p, initial = NULL){
     
   }
   
-  auxg1 <- function(M1, U1, u, n, ng, p, init, x, r){
+  auxg1 <- function(M1, U1, u, n, ng, p, x, r){
     M <- M1
     
-    GEidx <- GE(init)
-    Ginit <- init %*% solve(init[GEidx[1 : u], ])		
-    
-    j <- GEidx[r]
-    g <- as.matrix(Ginit[j, ])
-    t2 <- crossprod(Ginit[-j, ], as.matrix(M[-j, j])) / M[j, j]
-    t3 <- crossprod(Ginit[-j, ], as.matrix(invMU[-j, j])) / invMU[j, j]
-    
+    t2 <- crossprod(G1init[-j, ], as.matrix(M[-j, j])) / M[j, j]
+
     GUGt2 <- g + t2
-    GUG <- crossprod(Ginit, (M %*% Ginit)) - tcrossprod(GUGt2, GUGt2) * M[j, j]
-    
-    GVGt2 <- g + t3
-    GVG <- crossprod(Ginit, (invMU %*% Ginit)) - tcrossprod(GVGt2, GVGt2) * invMU[j, j] 
+    GUG <- crossprod(G1init, (M %*% G1init)) - tcrossprod(GUGt2, GUGt2) * M[j, j]
     
     invC1 <- chol2inv(chol(GUG))
-    invC2 <- chol2inv(chol(GVG))
     
     tmp2 <- x + t2
     tmp3 <- x + t3
@@ -104,7 +97,6 @@ henvMU <- function(M, U, MU, u, n, ng, p, initial = NULL){
   
   auxg2 <- function(M1, U1, t2, t3, invc1, invc2, ng, n, p, x, j){
     M <- M1
-
     
     tmp2 <- x + t2
     tmp3 <- x + t3
@@ -127,19 +119,27 @@ henvMU <- function(M, U, MU, u, n, ng, p, initial = NULL){
     
     maxiter = 100
     ftol = 1e-3
-    initout <- auxinit(M, U, MU, u, ng, n, p)
+    initout <- auxinit(M, U, MU, u, ng, n, p, initial)
     init <- initout$init
     obj1 <- initout$obj1
     invMU <- initout$invMU 
     
     GEidx <- GE(init)
-    Ginit <- init %*% solve(init[GEidx[1 : u], ])
+    Ginit = G1init <- init %*% solve(init[GEidx[1 : u], ])
     j <- GEidx[r]
+    
+    g <- as.matrix(Ginit[j, ])
+    t3 <- crossprod(Ginit[-j, ], as.matrix(invMU[-j, j])) / invMU[j, j]
+    
+    GVGt2 <- g + t3
+    GVG <- crossprod(Ginit, (invMU %*% Ginit)) - tcrossprod(GVGt2, GVGt2) * invMU[j, j]
+    
+    invC2 <- chol2inv(chol(GVG))
     
     fobj <- function(x) {
       res <- -2 * log(1 + sum(x^2)) 
       for(i in 1:p){
-        res <- res + auxf1(M[[i]], U[[i]], u, n, ng[i], p, init, x, r)
+        res <- res + auxf1(M[[i]], U[[i]], u, n, ng[i], p, x, r)
       }
       return(res)
     }
@@ -147,7 +147,7 @@ henvMU <- function(M, U, MU, u, n, ng, p, initial = NULL){
     gobj <- function(x) {
       res <- -4 * x %*% solve(1 + sum(x^2))
       for(i in 1:p){
-        res <- res + auxg1(M[[i]], U[[i]], u, n, ng[i], p, init, x, r)
+        res <- res + auxg1(M[[i]], U[[i]], u, n, ng[i], p, x, r)
       }
       return(res)
     }
@@ -183,7 +183,7 @@ henvMU <- function(M, U, MU, u, n, ng, p, initial = NULL){
     maxiter <- 100
     ftol <- 1e-3
     
-    initout <- auxinit(M, U, MU, u, ng, n, p)
+    initout <- auxinit(M, U, MU, u, ng, n, p, initial)
     init <- initout$init
     obj1 <- initout$obj1
     
@@ -220,6 +220,7 @@ henvMU <- function(M, U, MU, u, n, ng, p, initial = NULL){
           invc1[[k]] <- ginv(GUG[[k]]) #chol2inv(chol(GUG[[k]]))
           invc2[[k]] <- ginv(GVG[[k]]) #chol2inv(chol(GVG[[k]]))
         }
+        
         fobj <- function(x) {
           res <- -2 * log(1 + x %*% invt4 %*% x)
           for(k in 1:p){

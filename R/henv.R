@@ -262,14 +262,14 @@ henv <- function(X, Y, u, asy = TRUE, fit = TRUE, init = NULL) {
             J1[aaa : bbb, aaa : bbb] <- (0.5 * fracN[i] *
             crossprod(expan(r), kronecker(invres[[i]], invres[[i]])) %*% expan(r))
         }
-        #ggg <- r + 1
-        #hhh <- p * r + p * r * (r + 1) / 2
-        #iii <- (p - 1) * r + p * r * (r + 1) / 2
-        J1[ggg : hhh, ggg : hhh] <- J[1 : iii, 1 : iii]
+        ggg <- r + 1
+        hhh <- p * r + p * r * (r + 1) / 2
+        iii <- (p - 1) * r + p * r * (r + 1) / 2
+        J1[ggg : hhh, ggg : hhh] <- J1[1 : iii, 1 : iii]
         J1[1 : r, ] <- 0
         J1[ggg : hhh, 1 : r] <- 0
         for (i in 1 : p) {
-            J1[1 : r, 1 : r] <- J[1 : r, 1 : r] + fracN[i] * diag(r) %*% invres[[i]]
+            J1[1 : r, 1 : r] <- J1[1 : r, 1 : r] + fracN[i] * diag(r) %*% invres[[i]]
         }
         for (i in 1 : (p - 1)) {
             kkk <- i * r + 1
@@ -277,10 +277,26 @@ henv <- function(X, Y, u, asy = TRUE, fit = TRUE, init = NULL) {
             J1[1 : r, kkk : lll] <- fracN[i] * (invres[[p]] - invres[[i]])
             J1[kkk : lll, 1 : r] <- J1[1 : r, kkk : lll]
         }
-        temp1 <- ginv(J1) #chol2inv(chol(J1))
+        temp222 <- ginv(J1) #chol2inv(chol(J1))
+        temp111 <- kronecker(matrix(1, 1, (p - 1)), diag(r))
+        ccc <- r + 1
+        ddd <- r * p
+        vargroup <- temp111 %*% tcrossprod(temp222[ccc : ddd, ccc : ddd], temp111)
+        covMatrix <- matrix(0, r * (p + 1), r * (p + 1))
+        covMatrix[1 : ddd, 1 : ddd] <- temp222[1 : ddd, 1 : ddd]
+        eee <- r * p + 1
+        fff <- r * (p + 1)
+        covMatrix[eee : fff, eee : fff] <- vargroup
+        for (i in 1 : (p - 1)) {
+            mmm <- i * r + 1
+            nnn <- (i + 1) * r
+            covMatrix[eee : fff, mmm : nnn] <- (- temp111 %*% temp222[ccc : ddd, mmm : nnn])
+        }
+        covMatrix[ccc : ddd, eee : fff] <- t(covMatrix[eee : fff, ccc : ddd])
+        covMatrix[eee : fff, 1 : r] <- (- temp111 %*% temp222[ccc : ddd, 1 : r])
+        covMatrix[1 : r, eee : fff] <- t(covMatrix[eee : fff, 1 : r])
+        asyFm <- matrix(sqrt(diag(covMatrix[ccc : fff, ccc : fff])), r, p)
         
-        
-        asyFm <- matrix(sqrt(diag(temp1[1 : r * p, 1 : r * p])), r, p)
         aaaa <- p * r + p * r * (r + 1) / 2
         bbbb <- r + u * (r + p - 1 - u) + p * u * (u + 1) / 2 + (r - u) * (r - u + 1) / 2
         H <- matrix(0, aaaa, bbbb)

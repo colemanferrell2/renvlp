@@ -47,9 +47,9 @@ u.stenv <- function(X, Y, alpha = 0.01) {
   aic.mat <- -2 * loglik.mat + 2 * npara.mat
   bic.mat <- -2 * loglik.mat + log(n) * npara.mat
   u.aic <- arrayInd(which.min(aic.mat[d : p, d : r]), 
-                    dim(aic.mat[d : p, d : r])) + d - 1 
+                    dim(as.matrix(aic.mat[d : p, d : r]))) + d - 1
   u.bic <- arrayInd(which.min(bic.mat[d : p, d : r]), 
-                    dim(bic.mat[d : p, d : r])) + d - 1
+                    dim(as.matrix(bic.mat[d : p, d : r]))) + d - 1
   
   return(list(d = d, u.aic = u.aic, u.bic = u.bic, u.lrt = u.lrt, 
               loglik.mat = loglik.mat, aic.mat = aic.mat, bic.mat = bic.mat))
