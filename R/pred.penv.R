@@ -1,6 +1,6 @@
 pred.penv <- function(m, X1new, X2new) {
   
-  if(is.null(m$ratio)) stop("The asymptotic distribution part of env is missing. Rerun penv with asy = T")
+  if(is.null(m$ratio)) stop("The asymptotic distribution part of penv is missing. Rerun penv with asy = T")
   
   r <- ncol(m$Sigma)
   n <- m$n

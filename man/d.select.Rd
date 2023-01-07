@@ -1,11 +1,11 @@
-\name{d.stenv}
-\alias{d.stenv}
+\name{d.select}
+\alias{d.select}
 \title{Select the rank of beta}
 \description{
  This function outputs the rank selected by a chi-squared test developed by Bura and Cook (2003) with specified significance level for the beta. 
 }
 \usage{
-d.stenv(X, Y, alpha = 0.01)
+d.select(X, Y, alpha = 0.01)
 }
 \arguments{
   \item{X}{Predictors. An n by p matrix, p is the number of predictors. The predictors can be univariate or multivariate, discrete or continuous.}

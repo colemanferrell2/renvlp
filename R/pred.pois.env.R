@@ -1,6 +1,6 @@
 pred.pois.env <- function(m, Xnew) {
   if (is.null(m$ratio)) 
-    stop("The asymptotic distribution part of env is missing. Rerun pois.env with asy = T")
+    stop("The asymptotic distribution part of pois.env is missing. Rerun pois.env with asy = T")
   n <- m$n
   r <- 1
   if (is.null(m$Gamma)) {

@@ -1,7 +1,7 @@
 pred.senv <- function (m, Xnew) 
 {
   if (is.null(m$ratio)) 
-    stop("The asymptotic distribution part of env is missing. Rerun env with asy = T")
+    stop("The asymptotic distribution part of senv is missing. Rerun senv with asy = T")
   r <- ncol(m$Sigma)
   n <- m$n
   if (is.null(m$Gamma)) {

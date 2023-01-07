@@ -1,4 +1,4 @@
-d.stenv <- function (X, Y, alpha = 0.01){
+d.select <- function (X, Y, alpha = 0.01){
   X <- as.matrix(X)
   Y <- as.matrix(Y)
   a <- dim(Y)

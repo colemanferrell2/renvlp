@@ -1,7 +1,7 @@
 pred.sxenv <- function (m, Xnew) 
 {
   if (is.null(m$ratio)) 
-    stop("The asymptotic distribution part of env is missing. Rerun scale.xenv with asy = T")
+    stop("The asymptotic distribution part of sxenv is missing. Rerun sxenv with asy = T")
   n <- m$n
   r <- ncol(m$SigmaYcX)
   if (is.null(m$Gamma)) {

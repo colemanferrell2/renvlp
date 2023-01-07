@@ -5,7 +5,7 @@ u.stenv <- function(X, Y, alpha = 0.01) {
   n <- a[1]
   r <- a[2]
   p <- ncol(X)
-  tmp <- d.stenv(X, Y)
+  tmp <- d.select(X, Y)
   d <- tmp$rank.beta
   if (d == 0) 
     stop("d must be an integer between 0 and min(r, p).")

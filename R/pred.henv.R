@@ -1,6 +1,6 @@
 pred.henv <- function (m, Xnew) {
   
-  if(is.null(m$ratio)) stop("The asymptotic distribution part of env is missing. Rerun henv with asy = T")
+  if(is.null(m$ratio)) stop("The asymptotic distribution part of henv is missing. Rerun henv with asy = T")
   
   r <- ncol(m$Sigma[[1]])
   n <- m$n

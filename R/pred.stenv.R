@@ -1,6 +1,6 @@
 pred.stenv <- function(m, Xnew){
   if (is.null(m$ratio)) 
-    stop("The asymptotic distribution part of env is missing. Rerun stenv with asy = T")
+    stop("The asymptotic distribution part of stenv is missing. Rerun stenv with asy = T")
   r <- ncol(m$SigmaYcX)
   n <- m$n
   if (is.null(m$Gamma)) {

@@ -1,6 +1,6 @@
 pred.xenv <- function(m, Xnew) {
   
-  if(is.null(m$ratio)) stop("The asymptotic distribution part of env is missing. Rerun xenv with asy = T")
+  if(is.null(m$ratio)) stop("The asymptotic distribution part of xenv is missing. Rerun xenv with asy = T")
   
   n <- m$n
   r <- ncol(m$SigmaYcX)
