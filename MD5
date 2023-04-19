@@ -1,4 +1,4 @@
-71352c1297d74553194b1de246285756 *DESCRIPTION
+c1dc9cd01b79b0c52544bf83b852a8df *DESCRIPTION
 9a7a7f77211335bf878016bddf3223ff *NAMESPACE
 ddeb92331caea1f221d6f2b46f1499d7 *R/GE.R
 36161ef9fd51ae2afdccd1aaf3516697 *R/boot.env.R
@@ -107,7 +107,7 @@ b46714c1eea7c0973673556960298efe *R/u.pred2.env.R
 785725ba86e9d99d71183ac7d2b4c228 *R/u.rrenv.R
 992055940dbf1868e9a1732105ca1a4c *R/u.rrenv.apweights.R
 4719de3720a87085af9b2923f26f126d *R/u.senv.R
-00215c9ffb0686d40c7e8c2966e15b64 *R/u.stenv.R
+bda222185e7ea4c181a85dc7dbcdcdc4 *R/u.stenv.R
 9114f5c7d24db0aeccffd4b6f7e6c2cc *R/u.sxenv.R
 81a457e9ea125dc05e2051a3ab72af29 *R/u.xenv.R
 4c840acbe101339252a6de925424a53b *R/weighted.env.R
@@ -127,7 +127,7 @@ d5d77c1204df225cac066e3ef6cb2df9 *data/waterstrider.rda
 9f28cfa56fe37fa4a77d8771a4ebbdf2 *data/wheatprotein.rda
 c19312ce41a9bb4cf5b73ba96e201873 *man/Berkeley.Rd
 f3aeac7caaf9fe9df865cfb7bd23c6b2 *man/NJdata.Rd
-d7eac5ff2dfc2f3fb6c3188da204a3b7 *man/Renvlp.Rd
+ee583ecfe2fa2715f046645973b29f04 *man/Renvlp.Rd
 9e4c4385d5c81ba4db7f87a21b08dacc *man/amitriptyline.Rd
 1e64b83197ff8012a9837770fb6d2c4a *man/boot.env.Rd
 7926dd610255821270eb0c9720d6623f *man/boot.env.apweights.Rd
@@ -227,7 +227,7 @@ c91080657f72592c51a7f026144d5ac7 *man/u.pred2.env.Rd
 ffc3830c2afa37ad0a7ee23936aec8e6 *man/u.rrenv.Rd
 c40d4d23cb8d28be4af0dec3b0c30e01 *man/u.rrenv.apweights.Rd
 89a34f7b2a1aabf3ef6db7195d333eea *man/u.senv.Rd
-60cc6b77fd6eab8c835fc0fe98ac79fc *man/u.stenv.Rd
+a400aea1535d96693e2f6e0e49daf339 *man/u.stenv.Rd
 17047c68ed038c97e19d7b27d23fd6c1 *man/u.sxenv.Rd
 57431a404078343dade3246afe43ca29 *man/u.xenv.Rd
 8983a6af8a00ed5e15674f0ec83594ae *man/vehicles.Rd

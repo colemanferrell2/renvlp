@@ -17,9 +17,9 @@ u.stenv(X, Y, alpha = 0.01)
 \item{u.aic}{Dimension of the simultaneous envelope subspace selected by AIC.}
 \item{u.bic}{Dimension of the simultaneous envelope subspace selected by BIC.}
 \item{u.lrt}{Dimension of the simultaneous envelope subspace selected by the likelihood ratio testing procedure.}
-\item{loglik.mat}{Log likelihood for dimension from (1, 1) to (r, p).}
-\item{aic.mat}{AIC value for dimension from (1, 1) to (r, p).}
-\item{bic.mat}{BIC value for dimension from (1, 1) to (r, p).}
+\item{loglik.mat}{Log likelihood for dimension from (1, 1) to (p, r).}
+\item{aic.mat}{AIC value for dimension from (1, 1) to (p, r).}
+\item{bic.mat}{BIC value for dimension from (1, 1) to (p, r).}
 }
 
 \examples{
