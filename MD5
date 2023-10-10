@@ -1,4 +1,4 @@
-c1dc9cd01b79b0c52544bf83b852a8df *DESCRIPTION
+e2d11ede2d7dde154440539fd5127922 *DESCRIPTION
 9a7a7f77211335bf878016bddf3223ff *NAMESPACE
 ddeb92331caea1f221d6f2b46f1499d7 *R/GE.R
 36161ef9fd51ae2afdccd1aaf3516697 *R/boot.env.R
@@ -127,7 +127,7 @@ d5d77c1204df225cac066e3ef6cb2df9 *data/waterstrider.rda
 9f28cfa56fe37fa4a77d8771a4ebbdf2 *data/wheatprotein.rda
 c19312ce41a9bb4cf5b73ba96e201873 *man/Berkeley.Rd
 f3aeac7caaf9fe9df865cfb7bd23c6b2 *man/NJdata.Rd
-ee583ecfe2fa2715f046645973b29f04 *man/Renvlp.Rd
+06ce2056533c5e2c0203e945eea03b3e *man/Renvlp.Rd
 9e4c4385d5c81ba4db7f87a21b08dacc *man/amitriptyline.Rd
 1e64b83197ff8012a9837770fb6d2c4a *man/boot.env.Rd
 7926dd610255821270eb0c9720d6623f *man/boot.env.apweights.Rd
