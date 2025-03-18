@@ -17,3 +17,23 @@ knitr::opts_chunk$set(
 ```{r setup}
 library(Renvlp)
 ```
+
+***Idea for Re-branding:*** Multivariate Envelope Method for Efficiency regression (MEME) or (MEMER)
+
+# Introduction
+
+This vignette reviews the Multivariate Envelope Method for Efficiency regression (MEME) originally developed in ***Reference*** Cook, Li, and Chiaromonte (2010). The key idea behind MEME is to identify a lower-dimensional subspace in which the meaningful variation of a data set resides, while also eliminating the irrelevant variation. This is advantageous because it improves efficiency and enables more precise estimations, thereby making MEME preferable over traditional Ordinary Least-Squares (OLS) and the analogous Partial Least-Squares (PLS).
+
+Since MEME's introduction, various adaptations have emerged, extending across disciplines and diverse statistical applications. Several adaptations are compiled in the `renvlp` package in R for convenient implementation. Hence, this vignette details the original and extending methods of MEME using a theoretical framework alongside function descriptions and applications. First, we introduce and define envelopes, followed by the necessary setup for implementing the `renvlp` package. Next, we present a summary of the datasets that are used in the subsequent examples. With the background and essential definitions established, we delve into the mathematical details of the various extensions of MEME and demonstrate the implementation of the `renvlp` package on the sample data sets. We conclude by providing an interpretation of MEME and highlighting its key benefits.
+
+# Background
+
+# Installation and Setup
+
+# Data Description
+
+# Methods and Usage
+
+## Response MEME
+
+# Interpretation and Advantageous
